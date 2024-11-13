@@ -28,16 +28,15 @@ const Dashboard: React.FC = () => {
       <aside className="dashboard-sidebar">
         <h2>Menu</h2>
         <ul>
-          <li>Training & Skill Development</li>
-          <li>Human Resources & Recruitment</li>
-          <li>Field Operations & Missions</li>
-          <li>Intelligence Gathering & Analysis</li>
-          <li>Covert Communications</li>
-          <li>Logistics & Support</li>
-          <li>Psychological Operations</li>
-          <li>Technology & Cyber Espionage</li>
-          <li>Diplomatic and Economic Espionage</li>
-          <li>Deception & Misdirection</li>
+          <li>Home / News</li>
+          <li>Staff</li>
+          <li>Management</li>
+          <li>Training</li>
+          <li>Recruitment</li>
+          <li>Contracts</li>
+          <li>Map</li>
+          <li>Lair</li>
+          <li>Leaderboards</li>               
         </ul>
       </aside>
 
