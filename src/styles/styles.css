@@ -1,0 +1,103 @@
+/* src/components/Dashboard.css */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard-sidebar {
+  background-color: #1c1c1c;
+  color: white;
+  width: 250px;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-sidebar h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.dashboard-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dashboard-sidebar ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+}
+
+.dashboard-sidebar ul li:hover {
+  background-color: #333;
+  cursor: pointer;
+}
+
+.dashboard-main {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.dashboard-stats, .dashboard-news, .dashboard-map, .dashboard-red-phone, .dashboard-features {
+  margin-bottom: 30px;
+}
+
+.stats-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-card, .news-item, .feature-card {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.news-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.world-map {
+  width: 100%;
+  height: auto;
+}
+
+.red-phone {
+  display: block;
+  width: 100px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.dashboard-footer {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.dashboard-footer ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dashboard-footer ul li {
+  display: inline;
+  margin: 0 15px;
+}
+
+.dashboard-footer ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.dashboard-footer ul li a:hover {
+  text-decoration: underline;
+}
