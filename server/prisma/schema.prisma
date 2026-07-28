@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  username       String   @unique
+  password       String
+  agencyName     String   @default("The Hotline")
+  balance            Int      @default(5000)
+  reputation         Int      @default(10)
+  lastActiveAt       DateTime @default(now())
+  registrationNumber String   @default("HH-TEMP-000")
+  entityType         String   @default("Sole Trader")
+  incorporationDate  DateTime @default(now())
+  registeredAddress  String   @default("Sector 7G, Sub-Level 4")
+  createdAt          DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  staff          Staff[]
+  activeMissions ActiveMission[]
+  adminTasks     AdminTask[]
+}
+
+model Staff {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  name           String
+  type           String   // HITMAN, HR, etc.
+  age            Int
+  combat         Int      @default(1)
+  subterfuge     Int      @default(1)
+  technical      Int      @default(1)
+  logistics      Int      @default(1)
+  diplomacy      Int      @default(1)
+  specialTraitId String?
+  seniority      String   @default("JUNIOR") // JUNIOR, MID, SENIOR, EXECUTIVE
+  experience     Int      @default(0)
+  status         String   @default("IDLE") // IDLE, ON_MISSION, CAPTURED, TRAINING
+  salary         Int
+  hireDate       DateTime @default(now())
+  previousJob    String?
+  quirk          String?
+  backstory      String?
+  flavorText     String?
+  awards         String?  // Comma-separated list
+}
+
+model Mission {
+  id              String   @id @default(uuid())
+  name            String
+  type            String   // WETWORK, INTEL, etc.
+  description     String
+  difficulty      Int
+  durationSeconds Int
+  cashReward      Int
+  intelReward     Int      @default(0)
+  riskLevel       Int
+}
+
+model ActiveMission {
+  id         String   @id @default(uuid())
+  missionId  String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  staffIds   String   // Stored as comma-separated string for simplicity in SQLite
+  startTime  DateTime @default(now())
+  endTime    DateTime
+  status     String   @default("IN_PROGRESS") // IN_PROGRESS, SUCCESS, FAILURE, CAPTURED
+}
+
+model AdminTask {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  category  String
+  sender    String
+  subject   String
+  content   String
+  options   String   // JSON stringified options
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,36 @@
+/* Extraction of component-level styles */
+
+.auth-container {
+    text-align: centre;
+    margin-top: 20vh;
+}
+
+.auth-error {
+    color: #ef4444; /* text-hitman-red or red-500 */
+}
+
+.auth-success {
+    color: #22c55e; /* green-500 */
+}
+
+.splash-container {
+    text-align: centre;
+    margin-top: 50vh;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #000;
+    height: 0.5rem; /* h-2 */
+    border-radius: 9999px; /* rounded-full */
+    overflow: hidden;
+    border: 1px solid #111827; /* border-gray-900 */
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: #8b0000; /* bg-hitman-red */
+    transition-property: all;
+    transition-duration: 1000ms;
+    box-shadow: 0 0 10px rgba(139,0,0,0.5);
+}

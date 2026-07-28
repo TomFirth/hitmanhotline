@@ -1,0 +1,39 @@
+@tailwind components;
+
+@layer components {
+  .page-layout {
+    @apply p-4 md:p-8 max-w-7xl mx-auto pt-20 md:pt-8;
+  }
+
+  .section-header {
+    @apply mb-8;
+  }
+
+  .stat-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6 mb-8;
+  }
+
+  .stat-card {
+    @apply bg-hitman-gray border border-gray-800 p-6 rounded-lg;
+  }
+
+  .office-header {
+    @apply text-[10px] font-black tracking-[0.3em] text-gray-500 uppercase mb-1;
+  }
+
+  .page-title {
+    @apply text-4xl font-black text-white uppercase tracking-tighter italic;
+  }
+
+  .grid-container {
+    @apply grid grid-cols-1 lg:grid-cols-4 gap-8;
+  }
+
+  .main-column {
+    @apply lg:col-span-3;
+  }
+
+  .side-column {
+    @apply space-y-6;
+  }
+}

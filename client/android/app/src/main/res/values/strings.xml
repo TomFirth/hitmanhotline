@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Hitman Hotline</string>
+    <string name="title_activity_main">Hitman Hotline</string>
+    <string name="package_name">com.hitmanhotline.app</string>
+    <string name="custom_url_scheme">com.hitmanhotline.app</string>
+</resources>

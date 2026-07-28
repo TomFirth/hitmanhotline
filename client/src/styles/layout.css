@@ -1,0 +1,111 @@
+@tailwind components;
+
+@layer components {
+  .app-container {
+    @apply min-h-screen bg-hitman-black flex flex-col md:flex-row text-gray-300 font-sans selection:bg-hitman-red selection:text-white;
+  }
+
+  .sidebar {
+    @apply hidden md:flex flex-col w-64 bg-hitman-gray border-r border-gray-800 p-6 h-screen sticky top-0 overflow-y-auto custom-scrollbar;
+  }
+
+  .sidebar-header {
+    @apply mb-8 group;
+  }
+
+  .brand-logo {
+    @apply text-2xl font-black text-white italic tracking-tighter transition-all group-hover:tracking-normal;
+  }
+
+  .brand-accent {
+    @apply text-hitman-red font-normal;
+  }
+
+  .os-status {
+    @apply flex items-center gap-2 mt-1;
+  }
+
+  .os-pulse {
+    @apply w-2 h-2 bg-hitman-red animate-pulse rounded-full;
+  }
+
+  .os-version {
+    @apply text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold;
+  }
+
+  .main-content {
+    @apply flex-1 pb-20 md:pb-0 overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')];
+  }
+
+  .director-profile {
+    @apply mt-auto pt-6 border-t border-gray-800 flex items-center gap-3 px-2;
+  }
+
+  .director-avatar {
+    @apply w-8 h-8 bg-hitman-red/20 border border-hitman-red/40 rounded flex items-center justify-center text-hitman-red font-black;
+  }
+
+  .director-info {
+    @apply flex flex-col;
+  }
+
+  .director-name {
+    @apply text-xs font-bold text-white uppercase tracking-tighter;
+  }
+
+  .director-title {
+    @apply text-[9px] text-gray-500 uppercase tracking-widest;
+  }
+
+  .mobile-header {
+    @apply md:hidden fixed top-0 left-0 right-0 bg-hitman-gray/95 backdrop-blur-md border-b border-gray-800 p-4 z-50 flex justify-between items-center;
+  }
+
+  .mobile-nav-container {
+    @apply md:hidden fixed bottom-0 left-0 right-0 z-50 bg-hitman-gray border-t border-gray-800;
+  }
+
+  .nav-list {
+    @apply flex flex-col gap-2 pb-10;
+  }
+
+  .nav-section-button {
+    @apply flex items-center justify-between px-3 py-2 text-gray-400 hover:text-white hover:bg-hitman-black/30 rounded transition-colors group;
+  }
+
+  .nav-section-icon {
+    @apply text-hitman-red group-hover:scale-110 transition-transform;
+  }
+
+  .nav-section-info {
+    @apply flex flex-col items-start;
+  }
+
+  .nav-role {
+    @apply text-[10px] font-black tracking-[0.2em] leading-none mb-0.5;
+  }
+
+  .nav-title {
+    @apply text-[11px] text-gray-500 group-hover:text-gray-300 transition-colors uppercase;
+  }
+
+  .nav-sub-list {
+    @apply flex flex-col ml-10 mt-1 border-l border-gray-800;
+  }
+
+  .nav-item {
+    @apply px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all border-l-2 -ml-[2px];
+  }
+
+  .nav-item-active {
+    @apply text-white border-hitman-red font-bold bg-hitman-red/5;
+  }
+
+  .nav-item-inactive {
+    @apply text-gray-500 border-transparent hover:text-gray-300 hover:border-gray-600;
+  }
+
+  .nav-item-disabled {
+    @apply opacity-30 cursor-not-allowed;
+  }
+}
