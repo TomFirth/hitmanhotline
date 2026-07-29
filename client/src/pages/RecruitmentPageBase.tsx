@@ -182,7 +182,10 @@ const RecruitmentPageBase: React.FC<RecruitmentPageBaseProps> = ({ title, typeGr
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pool.map(recruit => (
-              <StaffCard key={recruit.id} staff={recruit} onAction={fetchPool} />
+              <StaffCard key={recruit.id} staff={recruit} onAction={() => {
+                handleHire(recruit);
+                fetchPool();
+              }} />
             ))}
           </div>
         )}

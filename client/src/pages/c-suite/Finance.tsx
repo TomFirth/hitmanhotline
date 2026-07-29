@@ -24,7 +24,7 @@ const FinancePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-hitman-gray border border-gray-800 p-6 rounded-lg">
             <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Liquid Assets</h3>
-            <p className="text-3xl font-mono text-green-500">${agency.balance.toLocaleString()}</p>
+            <p className="text-3xl font-mono text-green-500">${(agency?.balance || 0).toLocaleString()}</p>
             <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-400">
               <TrendingUp size={12} className="text-green-500" />
               <span>+2.4% from last fiscal week</span>
@@ -36,7 +36,7 @@ const FinancePage: React.FC = () => {
                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-widest">Tax Efficiency</h3>
                <span className="text-[10px] text-green-500 font-mono">OPTIMAL</span>
             </div>
-            <p className="text-3xl font-mono text-white">{agency.entityType === 'Sole Trader' ? '20%' : '15%'}</p>
+            <p className="text-3xl font-mono text-white">{agency?.entityType === 'Sole Trader' ? '20%' : '15%'}</p>
             <div className="mt-4 space-y-1">
                <div className="flex justify-between text-[8px] uppercase font-black text-gray-600">
                   <span>Sole Trader Bracket</span>
