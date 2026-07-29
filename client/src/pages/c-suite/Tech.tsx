@@ -1,10 +1,12 @@
 import React from 'react';
 import Layout from '../../components/Layout';
 import { Cpu, Zap, Binary, Wrench } from 'lucide-react';
+import HelpOverlay from '../../components/HelpOverlay';
 
 const TechPage: React.FC = () => {
   return (
     <Layout>
+      <HelpOverlay context="TECH" />
       <div className="p-4 md:p-8 max-w-7xl mx-auto pt-20 md:pt-8">
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-1">
@@ -32,7 +34,7 @@ const TechPage: React.FC = () => {
                    { name: 'Social Engineering', level: '01', color: 'bg-blue-500' },
                    { name: 'Penetration Testing', level: '01', color: 'bg-green-500' },
                  ].map(module => (
-                   <div key={module.name} className="bg-black/20 p-4 rounded border border-gray-800 flex justify-between items-center group hover:border-gray-600 transition-colors">
+                   <div key={module.name} className="bg-black/20 p-4 rounded border border-gray-800 flex justify-between items-center group hover:border-gray-600 transition-colours">
                       <div>
                          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Level {module.level}</p>
                          <p className="text-xs text-white font-bold uppercase">{module.name}</p>

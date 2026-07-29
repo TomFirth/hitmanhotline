@@ -16,6 +16,7 @@ model User {
   password       String
   agencyName     String   @default("The Hotline")
   balance            Int      @default(5000)
+  escrowBalance      Int      @default(0)
   reputation         Int      @default(10)
   lastActiveAt       DateTime @default(now())
   registrationNumber String   @default("HH-TEMP-000")
@@ -27,6 +28,7 @@ model User {
   staff          Staff[]
   activeMissions ActiveMission[]
   adminTasks     AdminTask[]
+  auctionBids    AuctionBid[]
 }
 
 model Staff {
@@ -50,8 +52,24 @@ model Staff {
   previousJob    String?
   quirk          String?
   backstory      String?
-  flavorText     String?
+  flavourText    String?
   awards         String?  // Comma-separated list
+  lastSalaryReview DateTime @default(now())
+
+  // Auction Fields
+  auctionExpiry  DateTime?
+  startingPrice  Int?
+  auctionBids    AuctionBid[]
+}
+
+model AuctionBid {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  staffId   String
+  staff     Staff    @relation(fields: [staffId], references: [id])
+  amount    Int
+  createdAt DateTime @default(now())
 }
 
 model Mission {
@@ -87,4 +105,20 @@ model AdminTask {
   content   String
   options   String   // JSON stringified options
   createdAt DateTime @default(now())
+}
+
+model Sponsor {
+  id           String   @id @default(uuid())
+  name         String
+  type         String   // KNIVES, PISTOLS, SMGS, RIFLES
+  dailyPayout  Int
+  durationDays Int
+  createdAt    DateTime @default(now())
+}
+
+model NewsHeadline {
+  id        String   @id @default(uuid())
+  headline  String
+  timestamp DateTime @default(now())
+  priority  String   @default("LOW") // LOW, HIGH
 }

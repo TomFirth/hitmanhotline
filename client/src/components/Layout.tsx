@@ -11,8 +11,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="app-container">
       <aside className="sidebar">
-        <div className="sidebar-header">
-          <h2 className="brand-logo">
+        <div className="sidebar-header group">
+          <h2 className="brand-logo group-hover:tracking-normal">
             HITMAN<span className="brand-accent">HOTLINE</span>
           </h2>
           <div className="os-status">

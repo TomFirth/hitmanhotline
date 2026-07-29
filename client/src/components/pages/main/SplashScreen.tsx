@@ -7,7 +7,7 @@ const SplashScreen: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       navigate('/login');
-    }, 2000); // 2 seconds delay
+    }, 2000); 
   }, [navigate]);
 
   return (

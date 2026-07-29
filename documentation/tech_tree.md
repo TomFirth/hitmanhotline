@@ -5,7 +5,13 @@ The CTO manages the Agency's long-term capabilities through the Tech Tree. Resea
 ## 🛠️ Research Mechanics
 - **Earning RP:** Points are granted upon mission completion based on difficulty and Technical skill of assigned assets.
 - **Node Cap:** If 50 nodes exist and are all researched, RP accumulation pauses until new directives are issued.
-- **Unlock Requirements:** Many nodes require specific Agency Levels or prerequisite research.
+- **Blueprints:** Advanced nodes are locked behind **Blueprints**. These are rare fragments found only as rewards for "Intel" or "Cyber" missions. You must run non-financial missions to unlock top-tier tech.
+
+## ⚡ Mainframe Overclocking
+The CEO can authorise the CTO to "Overclock" the agency mainframe for immediate operational boosts.
+- **Benefits:** Resolves active missions 10% faster and increases RP generation by 2x.
+- **The Risk (Tech Debt):** Overclocking has a 5% chance per hour of causing a **Mainframe Crash**. 
+- **Consequences:** Your server goes offline for 1 real-time hour, locking you out of the market and mission control.
 
 ## 🌿 Core Research Branches
 

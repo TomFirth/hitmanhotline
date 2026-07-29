@@ -34,6 +34,12 @@ Dealing with the "paperwork" of being a shadow agency.
     - *Option A:* "We Hit Different" (Prestige +5).
     - *Option B:* "Customer Satisfaction Guaranteed... or Else" (Heat +2).
 
+### 👨‍💼 HR & Personal Life
+Handling the "human" in Human Resources.
+- **Life Events:** Agents may want raises, or require leave for marriages, honeymoons, or family crises.
+- **HR Inbox:** Permits or denies holiday requests. Decisions appear as News/Email alerts.
+- **Logistics Costs:** Training is not just time; it includes resource costs (e.g., ammunition rounds per week).
+
 ## Mechanics
 - **Frequency:** A new task appears every **12–24 hours**. This encourages a once-a-day "Daily Briefing" ritual.
 - **Active Monitoring:** Urgent "Red Phone" tasks are only generated while the CEO is actively logged into the Agency OS.

@@ -12,7 +12,7 @@ const PREVIOUS_JOBS = [
 ];
 
 const QUIRKS = [
-  "Allergic to the color blue",
+  "Allergic to the colour blue",
   "Refuses to work on Tuesdays",
   "Speaks only in riddles when stressed",
   "Obsessed with perfect cable management",
@@ -35,7 +35,7 @@ const BACKSTORIES = [
   "Sent here by a career counselor who was clearly terrified of them.",
 ];
 
-export const generateFlavor = () => {
+export const generateFlavour = () => {
   const previousJob = PREVIOUS_JOBS[Math.floor(Math.random() * PREVIOUS_JOBS.length)];
   const quirk = QUIRKS[Math.floor(Math.random() * QUIRKS.length)];
   const backstory = BACKSTORIES[Math.floor(Math.random() * BACKSTORIES.length)];
@@ -44,6 +44,6 @@ export const generateFlavor = () => {
     previousJob,
     quirk,
     backstory,
-    flavorText: `${previousJob}. ${backstory} ${quirk}.`
+    flavourText: `${previousJob}. ${backstory} ${quirk}.`
   };
 };

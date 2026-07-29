@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { useGameStore } from '../store/useGameStore';
-import { User, Shield, Building, Mail, Lock, Save, FileText, MapPin } from 'lucide-react';
+import { Shield, Save, User, Mail, Lock, Building, FileText, MapPin } from 'lucide-react';
+import HelpOverlay from '../components/HelpOverlay';
 
 const AccountPage: React.FC = () => {
   const { agency, setAgency } = useGameStore();
@@ -17,11 +18,8 @@ const AccountPage: React.FC = () => {
     registeredAddress: agency.registeredAddress,
   });
 
-  const [isSaving, setIsSaving] = useState(false);
-
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     try {
       const res = await fetch('/api/user/update-profile', {
         method: 'POST',
@@ -35,14 +33,11 @@ const AccountPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
   const handleAgencyUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     try {
       const res = await fetch('/api/user/update-agency', {
         method: 'POST',
@@ -56,13 +51,12 @@ const AccountPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error updating agency:', error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
   return (
     <Layout>
+      <HelpOverlay context="ACCOUNT" />
       <div className="p-4 md:p-8 max-w-4xl mx-auto pt-20 md:pt-8 pb-32">
         <header className="mb-12">
           <div className="flex items-center gap-2 mb-1 text-hitman-red">
@@ -76,7 +70,6 @@ const AccountPage: React.FC = () => {
         </header>
 
         <div className="space-y-12">
-          {/* Profile Section */}
           <section className="bg-hitman-gray border border-gray-800 rounded-lg overflow-hidden">
             <div className="p-4 border-b border-gray-800 bg-black/20 flex items-center gap-2">
               <User size={16} className="text-blue-500" />
@@ -124,17 +117,15 @@ const AccountPage: React.FC = () => {
               </div>
               <div className="pt-4 flex justify-end">
                 <button
-                  disabled={isSaving}
                   className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded text-xs font-black uppercase tracking-widest transition-colors"
                 >
                   <Save size={14} />
-                  {isSaving ? 'Processing...' : 'Save Profile'}
+                  Save Profile
                 </button>
               </div>
             </form>
           </section>
 
-          {/* Agency Filing Section */}
           <section className="bg-hitman-gray border border-gray-800 rounded-lg overflow-hidden">
             <div className="p-4 border-b border-gray-800 bg-black/20 flex items-center gap-2">
               <Building size={16} className="text-hitman-red" />
@@ -207,17 +198,15 @@ const AccountPage: React.FC = () => {
               <div className="pt-4 flex justify-between items-center">
                 <p className="text-[9px] text-gray-600 italic">* Rebranding may incur a administrative fee of 100 Prestige.</p>
                 <button
-                  disabled={isSaving}
                   className="flex items-center gap-2 bg-hitman-red hover:bg-red-700 text-white px-6 py-2 rounded text-xs font-black uppercase tracking-widest transition-colors"
                 >
                   <Save size={14} />
-                  {isSaving ? 'Filing...' : 'File Changes'}
+                  File Changes
                 </button>
               </div>
             </form>
           </section>
 
-          {/* System Settings */}
           <section className="bg-hitman-black/40 border border-dashed border-gray-800 p-8 rounded-lg">
              <h3 className="text-white font-bold uppercase text-sm mb-6 italic tracking-widest">Agency OS Settings</h3>
              <div className="space-y-6">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useGameStore } from '../store/useGameStore';
 import {
@@ -30,11 +30,8 @@ interface NavSection {
 const Navigation: React.FC = () => {
   const location = useLocation();
   const { isOnline } = useGameStore();
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'CEO': true
-  });
 
-  const sections: NavSection[] = [
+  const sections: NavSection[] = useMemo(() => [
     {
       role: 'CEO',
       title: 'Executive Suite',
@@ -91,7 +88,9 @@ const Navigation: React.FC = () => {
       title: 'Market & PR',
       icon: <Megaphone size={18} />,
       items: [
-        { name: 'Recruitment', path: '/market', offline: true },
+        { name: 'Field Agents', path: '/market/agents', offline: true },
+        { name: 'Support Staff', path: '/market/staff', offline: true },
+        { name: 'Auction House', path: '/market/auctions', offline: false },
         { name: 'Brand Intelligence', path: '/cmo/market', offline: false },
       ]
     },
@@ -104,14 +103,34 @@ const Navigation: React.FC = () => {
         { name: 'Heat Management', path: '/clo/heat', offline: true },
       ]
     }
-  ];
+  ], []);
+
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
+    const activeSection = sections.find(s => s.items.some(item => item.path === location.pathname));
+    return {
+      'CEO': activeSection ? activeSection.role === 'CEO' : true,
+      [activeSection?.role || '']: true
+    };
+  });
 
   const toggleSection = (role: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [role]: !prev[role]
-    }));
+    setExpandedSections(prev => {
+      const newState: Record<string, boolean> = {};
+      Object.keys(prev).forEach(key => newState[key] = false);
+      newState[role] = !prev[role];
+      return newState;
+    });
   };
+
+  useEffect(() => {
+    const currentSection = sections.find(s => s.items.some(item => item.path === location.pathname));
+    if (currentSection) {
+      setExpandedSections(prev => ({
+        ...prev,
+        [currentSection.role]: true
+      }));
+    }
+  }, [location.pathname, sections]);
 
   return (
     <nav className="nav-list">
@@ -119,15 +138,15 @@ const Navigation: React.FC = () => {
         <div key={section.role} className="flex flex-col">
           <button
             onClick={() => toggleSection(section.role)}
-            className="nav-section-button"
+            className="nav-section-button group"
           >
             <div className="flex items-center gap-3">
-              <span className="nav-section-icon">
+              <span className="nav-section-icon group-hover:scale-110">
                 {section.icon}
               </span>
               <div className="nav-section-info">
                 <span className="nav-role">{section.role}</span>
-                <span className="nav-title">{section.title}</span>
+                <span className="nav-title group-hover:text-gray-300">{section.title}</span>
               </div>
             </div>
             {expandedSections[section.role] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}

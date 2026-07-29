@@ -4,22 +4,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const staff_1 = __importDefault(require("./routes/staff"));
 const missions_1 = __importDefault(require("./routes/missions"));
 const adminTasks_1 = __importDefault(require("./routes/adminTasks"));
 const user_1 = __importDefault(require("./routes/user"));
+const auction_1 = __importDefault(require("./routes/auction"));
 const missionEngine_1 = require("./services/missionEngine");
 const adminTaskService_1 = require("./services/adminTaskService");
+const populationService_1 = require("./services/populationService");
+const salaryService_1 = require("./services/salaryService");
+const auctionService_1 = require("./services/auctionService");
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3001;
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-// Start Core Services
 (0, missionEngine_1.startEngine)();
 (0, adminTaskService_1.startTaskGenerator)();
+(0, auctionService_1.startAuctionEngine)();
+(0, populationService_1.ensureMinimumContent)().catch(console.error);
+(0, salaryService_1.processSalaryReviews)().catch(console.error);
 app.use('/api/staff', staff_1.default);
 app.use('/api/missions', missions_1.default);
 app.use('/api/tasks', adminTasks_1.default);
 app.use('/api/user', user_1.default);
+app.use('/api/auction', auction_1.default);
 app.get('/api/agency', (_req, res) => {
     res.json({
         name: 'The Hotline',

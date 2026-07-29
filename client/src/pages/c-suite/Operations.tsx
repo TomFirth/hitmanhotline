@@ -4,6 +4,7 @@ import { Briefcase, Globe, Target, AlertCircle } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import ActiveMissionCard from '../../components/ActiveMissionCard';
 import { Mission } from '../../types/game';
+import HelpOverlay from '../../components/HelpOverlay';
 
 const OperationsPage: React.FC = () => {
   const { activeMissions, staff, setActiveMissions, setStaff, setAgency } = useGameStore();
@@ -25,10 +26,22 @@ const OperationsPage: React.FC = () => {
     fetchMissions();
   }, [setActiveMissions]);
 
+  const handleRefreshMissions = async () => {
+    try {
+      const res = await fetch('/api/missions/refresh', { method: 'POST' });
+      if (res.ok) {
+        setAvailableMissions(await res.json());
+      }
+    } catch (error) {
+      console.error('Error refreshing missions:', error);
+    }
+  };
+
   const handleStartMission = async (missionId: string) => {
-    const idleStaff = staff.filter(s => s.status === 'IDLE').slice(0, 1);
+    
+    const idleStaff = staff.filter(s => s.status === 'IDLE' && s.type === 'HITMAN').slice(0, 1);
     if (idleStaff.length === 0) {
-      alert("No idle staff available for this operation.");
+      alert("No idle field agents (Hitmen) available for this operation.");
       return;
     }
 
@@ -44,12 +57,15 @@ const OperationsPage: React.FC = () => {
       if (res.ok) {
         const newActive = await res.json();
         setActiveMissions([...activeMissions, newActive]);
-        // Update local staff status
+        
         const updatedStaff = staff.map(s =>
-          idleStaff.find(is => is.id === s.id) ? { ...s, status: 'ON_MISSION' } : s
+          idleStaff.find(is => is.id === s.id) ? { ...s, status: 'ON_MISSION' as const } : s
         );
-        // @ts-ignore - status update
+        
         setStaff(updatedStaff);
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to start mission.");
       }
     } catch (error) {
       console.error('Error starting mission:', error);
@@ -57,7 +73,7 @@ const OperationsPage: React.FC = () => {
   };
 
   const handleMissionComplete = async (result: any) => {
-    // Refresh agency and staff data
+    
     try {
       const [agencyRes, staffRes] = await Promise.all([
         fetch('/api/agency'),
@@ -66,10 +82,10 @@ const OperationsPage: React.FC = () => {
       if (agencyRes.ok) setAgency(await agencyRes.json());
       if (staffRes.ok) setStaff(await staffRes.json());
 
-      // Remove from active missions
+      
       setActiveMissions(activeMissions.filter(m => m.id !== result.id));
 
-      // Show result (simple alert for now)
+      
       alert(`Mission Resolved: ${result.status}\nRewards: $${result.rewards?.cash || 0}, ${result.rewards?.xp || 0} XP`);
     } catch (error) {
       console.error('Error syncing after mission completion:', error);
@@ -77,6 +93,7 @@ const OperationsPage: React.FC = () => {
   };
   return (
     <Layout>
+      <HelpOverlay context="OPERATIONS" />
       <div className="p-4 md:p-8 max-w-7xl mx-auto pt-20 md:pt-8">
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-1">
@@ -109,10 +126,18 @@ const OperationsPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <section className="bg-hitman-gray border border-gray-800 p-6 rounded-lg">
-                <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
-                  <Target size={16} className="text-hitman-red" />
-                  Available Contracts
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-white font-bold uppercase text-xs tracking-widest flex items-center gap-2">
+                    <Target size={16} className="text-hitman-red" />
+                    Available Contracts
+                  </h3>
+                  <button
+                    onClick={handleRefreshMissions}
+                    className="text-[9px] text-gray-500 hover:text-white uppercase font-bold tracking-widest underline"
+                  >
+                    Refresh
+                  </button>
+                </div>
                 <div className="space-y-4">
                   {availableMissions.map(m => (
                     <div key={m.id} className="p-3 bg-black/20 rounded border border-gray-700 flex justify-between items-center group hover:border-hitman-red transition-all">
@@ -122,9 +147,9 @@ const OperationsPage: React.FC = () => {
                        </div>
                        <button
                         onClick={() => handleStartMission(m.id)}
-                        className="text-[9px] bg-hitman-red px-2 py-1 rounded text-white font-black hover:bg-red-700 transition-colors uppercase"
+                        className="text-[9px] bg-hitman-red px-2 py-1 rounded text-white font-black hover:bg-red-700 transition-colours uppercase"
                        >
-                         Authorize
+                         Authorise
                        </button>
                     </div>
                   ))}
@@ -169,7 +194,7 @@ const OperationsPage: React.FC = () => {
                 <div className="flex gap-3">
                   <div className="w-1 h-8 bg-hitman-red rounded-full"></div>
                   <div>
-                     <p className="text-[10px] text-white font-bold uppercase">System Initialization</p>
+                     <p className="text-[10px] text-white font-bold uppercase">System Initialisation</p>
                      <p className="text-[9px] text-gray-500">Agency OS is online. Ready for command.</p>
                   </div>
                 </div>
@@ -186,8 +211,8 @@ const OperationsPage: React.FC = () => {
             <div className="bg-hitman-red/10 border border-hitman-red/20 rounded-lg p-6">
               <h3 className="text-hitman-red font-bold uppercase text-[10px] tracking-widest mb-2">Protocol Zero</h3>
               <p className="text-[9px] text-gray-400 mb-4">In the event of total agency compromise, initiate shredding procedures immediately.</p>
-              <button className="w-full py-2 bg-hitman-red text-white text-[10px] font-black uppercase tracking-tighter hover:bg-red-700 transition-colors">
-                Authorize Wipe
+              <button className="w-full py-2 bg-hitman-red text-white text-[10px] font-black uppercase tracking-tighter hover:bg-red-700 transition-colours">
+                Authorise Wipe
               </button>
             </div>
           </aside>

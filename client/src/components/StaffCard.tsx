@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Staff, Seniority } from '../types/game';
-import { Shield } from 'lucide-react';
+import { Shield, Hammer, Gavel, Trash2, UserPlus, Timer } from 'lucide-react';
+import { useGameStore } from '../store/useGameStore';
 import '../styles/components.css';
 
 interface StaffCardProps {
   staff: Staff;
+  onAction?: () => void;
 }
 
 const SeniorityBadge: React.FC<{ seniority: Seniority }> = ({ seniority }) => {
-  const colors = {
+  const colours = {
     [Seniority.JUNIOR]: 'text-gray-400',
     [Seniority.MID]: 'text-blue-400',
     [Seniority.SENIOR]: 'text-hitman-red',
@@ -16,7 +18,7 @@ const SeniorityBadge: React.FC<{ seniority: Seniority }> = ({ seniority }) => {
   };
 
   return (
-    <div className={`flex gap-0.5 ${colors[seniority]}`}>
+    <div className={`flex gap-0.5 ${colours[seniority]}`}>
       <Shield size={10} fill="currentColor" />
       {(seniority === Seniority.MID || seniority === Seniority.SENIOR || seniority === Seniority.EXECUTIVE) && <Shield size={10} fill="currentColor" />}
       {(seniority === Seniority.SENIOR || seniority === Seniority.EXECUTIVE) && <Shield size={10} fill="currentColor" />}
@@ -25,13 +27,140 @@ const SeniorityBadge: React.FC<{ seniority: Seniority }> = ({ seniority }) => {
   );
 };
 
-const StaffCard: React.FC<StaffCardProps> = ({ staff }) => {
+const StaffCard: React.FC<StaffCardProps> = ({ staff, onAction }) => {
+  const { agency, setAgency, setStaff } = useGameStore();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [bidAmount, setBidAmount] = useState<number>(0);
+
   const isEmployeeOfMonth = staff.awards?.includes('Employee of the Month');
+  const isOnMarket = staff.userId === 'market-user-id';
+  const isMine = staff.userId === agency.id;
+  const isAuction = !!staff.auctionExpiry && new Date(staff.auctionExpiry) > new Date();
+
+  
+  const skills = staff.skills || {
+    combat: (staff as any).combat || 0,
+    subterfuge: (staff as any).subterfuge || 0,
+    technical: (staff as any).technical || 0,
+    logistics: (staff as any).logistics || 0,
+    diplomacy: (staff as any).diplomacy || 0,
+  };
+
+  const handleHire = async () => {
+    if (agency.balance < (staff as any).cost) {
+      alert("Insufficient funds.");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const res = await fetch(`/api/staff/hire/${staff.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: agency.id, cost: (staff as any).cost })
+      });
+
+      if (res.ok) {
+        const agencyRes = await fetch('/api/agency');
+        const staffRes = await fetch('/api/staff');
+        if (agencyRes.ok) setAgency(await agencyRes.json());
+        if (staffRes.ok) setStaff(await staffRes.json());
+        onAction?.();
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleFire = async () => {
+    if (!window.confirm(`Terminate contract for ${staff.name}? No severance will be paid.`)) return;
+
+    setIsProcessing(true);
+    try {
+      const res = await fetch(`/api/staff/fire/${staff.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: agency.id })
+      });
+
+      if (res.ok) {
+        const staffRes = await fetch('/api/staff');
+        if (staffRes.ok) setStaff(await staffRes.json());
+        onAction?.();
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleSell = async () => {
+    const price = prompt("Enter starting auction price ($):", "1000");
+    const duration = prompt("Enter duration in days (1, 3, 5, or 7):", "3");
+
+    if (!price || !duration) return;
+
+    setIsProcessing(true);
+    try {
+      const res = await fetch('/api/auction/sell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          staffId: staff.id,
+          userId: agency.id,
+          startingPrice: parseInt(price),
+          durationDays: parseInt(duration)
+        })
+      });
+
+      if (res.ok) {
+        const staffRes = await fetch('/api/staff');
+        if (staffRes.ok) setStaff(await staffRes.json());
+        onAction?.();
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleBid = async () => {
+    if (!bidAmount || bidAmount <= 0) return;
+
+    setIsProcessing(true);
+    try {
+      const res = await fetch('/api/auction/bid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          staffId: staff.id,
+          userId: agency.id,
+          amount: bidAmount
+        })
+      });
+
+      if (res.ok) {
+        alert("Bid placed successfully!");
+        onAction?.();
+      } else {
+        const err = await res.json();
+        alert(err.error);
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const highestBid = staff.auctionBids?.[0]?.amount || staff.startingPrice;
 
   return (
-    <div className={`staff-card ${
+    <div className={`staff-card relative ${
       isEmployeeOfMonth ? 'staff-card-awarded' : 'staff-card-default'
     }`}>
+      {isAuction && (
+        <div className="absolute -top-2 -right-2 bg-hitman-red text-white text-[8px] font-black px-2 py-1 rounded shadow-lg flex items-center gap-1 z-10">
+          <Gavel size={10} /> AUCTION ACTIVE
+        </div>
+      )}
+
       <div className="flex justify-between items-start mb-2">
         <div className="flex gap-3">
           <div className="staff-avatar">
@@ -56,9 +185,37 @@ const StaffCard: React.FC<StaffCardProps> = ({ staff }) => {
         </div>
         <div className="text-right">
           <p className="text-sm text-gray-400">Age: {staff.age}</p>
-          <p className="staff-salary">${staff.salary}/day</p>
+          <p className="staff-salary">
+            {isAuction ? `Bid: $${highestBid}` : `$${staff.salary}/day`}
+          </p>
         </div>
       </div>
+
+      {isAuction && (
+        <div className="mt-2 bg-black/40 p-2 rounded border border-gray-800 flex justify-between items-center">
+           <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold">
+              <Timer size={12} className="text-hitman-red" />
+              <span>Ends: {new Date(staff.auctionExpiry!).toLocaleDateString()}</span>
+           </div>
+           {!isMine && (
+             <div className="flex gap-1">
+                <input
+                  type="number"
+                  className="w-16 bg-black border border-gray-700 rounded text-[10px] px-1 text-white"
+                  placeholder="Amt"
+                  onChange={(e) => setBidAmount(parseInt(e.target.value))}
+                />
+                <button
+                  onClick={handleBid}
+                  disabled={isProcessing}
+                  className="bg-green-600 px-2 py-1 rounded text-[8px] font-black text-white uppercase hover:bg-green-500"
+                >
+                  Bid
+                </button>
+             </div>
+           )}
+        </div>
+      )}
 
       {staff.previousJob && (
         <div className="mt-2 text-[10px] text-gray-400 italic">
@@ -86,13 +243,13 @@ const StaffCard: React.FC<StaffCardProps> = ({ staff }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-2 mt-4">
-        {Object.entries(staff.skills).map(([skill, value]) => (
+        {Object.entries(skills).map(([skill, value]) => (
           <div key={skill} className="flex flex-col">
             <span className="text-[10px] uppercase text-gray-500">{skill}</span>
             <div className="skill-bar-container">
               <div
                 className="skill-bar-fill"
-                style={{ width: `${(value / 5) * 100}%` }}
+                style={{ width: `${(Number(value) / 10) * 100}%` }}
               />
             </div>
           </div>
@@ -106,9 +263,39 @@ const StaffCard: React.FC<StaffCardProps> = ({ staff }) => {
         }`}>
           {staff.status}
         </span>
-        <button className="text-xs text-gray-400 hover:text-white underline">
-          View Details
-        </button>
+
+        <div className="flex gap-2">
+          {isMine && !isAuction && (
+            <>
+              <button
+                onClick={handleSell}
+                disabled={isProcessing}
+                className="flex items-center gap-1 text-[10px] font-black text-blue-500 hover:text-blue-400 uppercase transition-colours"
+              >
+                <Hammer size={12} /> Sell
+              </button>
+              <button
+                onClick={handleFire}
+                disabled={isProcessing}
+                className="flex items-center gap-1 text-[10px] font-black text-hitman-red hover:text-red-400 uppercase transition-colours"
+              >
+                <Trash2 size={12} /> Fire
+              </button>
+            </>
+          )}
+          {isOnMarket && !isAuction && (
+             <button
+              onClick={handleHire}
+              disabled={isProcessing}
+              className="flex items-center gap-1 text-[10px] font-black text-green-500 hover:text-green-400 uppercase transition-colours"
+            >
+               <UserPlus size={12} /> Hire
+            </button>
+          )}
+          <button className="text-xs text-gray-400 hover:text-white underline">
+            Details
+          </button>
+        </div>
       </div>
     </div>
   );

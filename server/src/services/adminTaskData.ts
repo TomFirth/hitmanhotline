@@ -45,7 +45,7 @@ export const ADMIN_TASK_TEMPLATES: AdminTaskTemplate[] = [
     ]
   },
   {
-    id: 'weaponized-umbrella',
+    id: 'weaponised-umbrella',
     category: 'FINANCE',
     sender: 'R&D Lead',
     subject: 'Expense Report: Tactical Umbrella',

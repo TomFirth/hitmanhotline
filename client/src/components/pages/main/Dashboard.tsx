@@ -24,72 +24,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar Menu */}
-      <aside className="dashboard-sidebar">
-        <h2>Menu</h2>
-        <ul>
-          <li>Home / News</li>
-          <li>Staff</li>
-          <li>Management</li>
-          <li>Training</li>
-          <li>Recruitment</li>
-          <li>Contracts</li>
-          <li>Map</li>
-          <li>Lair</li>
-          <li>Leaderboards</li>               
-        </ul>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="dashboard-main">
-        {/* Statistics Section */}
-        <section className="dashboard-stats">
-          <h3>Statistics</h3>
-          <div className="stats-grid">
-            <div className="stat-card">Missions Completed: 20</div>
-            <div className="stat-card">Active Agents: 35</div>
-            <div className="stat-card">Successful Infiltrations: 12</div>
-            <div className="stat-card">Critical Threats Neutralized: 5</div>
-          </div>
-        </section>
-
-        {/* News Feed */}
-        <section className="dashboard-news">
-          <h3>News Feed</h3>
-          <div className="news-feed">
-            <div className="news-item">Breaking: Global espionage tensions rise...</div>
-            <div className="news-item">New cyber threat detected targeting...</div>
-            <div className="news-item">Top agent awarded for outstanding...</div>
-          </div>
-        </section>
-
-        {/* World Map */}
-        <section className="dashboard-map">
-          <h3>World Map</h3>
-          <img src="/path-to-your-world-map-image.jpg" alt="World Map" className="world-map" />
-        </section>
-
-        {/* Red Phone */}
-        <section className="dashboard-red-phone">
-          <h3>Red Phone</h3>
-          <div className="red-phone-desk">
-            <img src="/path-to-red-phone-image.jpg" alt="Red Phone" className="red-phone" />
-          </div>
-        </section>
-
-        {/* Additional Features */}
-        <section className="dashboard-features">
-          <h3>Additional Features</h3>
-          <div className="features-grid">
-            <div className="feature-card">Agent Network</div>
-            <div className="feature-card">Mission Planner</div>
-            <div className="feature-card">Encryption Tools</div>
-            <div className="feature-card">Covert Operations Logs</div>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer */}
+      {}
       <footer className="dashboard-footer">
         <ul>
           <li><a href="/contact">Contact Us</a></li>

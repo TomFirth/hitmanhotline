@@ -37,7 +37,7 @@ export const resolveMission = async (activeMissionId: string) => {
   const successChance = Math.min(Math.max(baseRate, 0.1), 0.95);
 
   const roll = Math.random();
-  let status: 'SUCCESS' | 'FAILURE' | 'CAPTURED' = 'FAILURE';
+  let status: 'SUCCESS' | 'FAILURE' | 'CAPTURED' | 'DECEASED' = 'FAILURE';
   let xpMultiplier = 1;
 
   if (roll < successChance * 0.2) {
@@ -45,8 +45,17 @@ export const resolveMission = async (activeMissionId: string) => {
     xpMultiplier = 2;
   } else if (roll < successChance) {
     status = 'SUCCESS';
-  } else if (roll > 0.9 && mission.riskLevel > 2) {
-    status = 'CAPTURED';
+  } else {
+    
+    const riskRoll = Math.random();
+    const riskFactor = mission.riskLevel / 10; 
+
+    if (riskRoll < riskFactor * 0.3) {
+      
+      status = (mission.riskLevel >= 9 && Math.random() > 0.8) ? 'DECEASED' : 'CAPTURED';
+    } else {
+      status = 'FAILURE';
+    }
   }
 
   const cashReward = status === 'SUCCESS' ? mission.cashReward : 0;
@@ -68,7 +77,7 @@ export const resolveMission = async (activeMissionId: string) => {
     ...assignedStaff.map(s => prisma.staff.update({
       where: { id: s.id },
       data: {
-        status: status === 'CAPTURED' ? 'CAPTURED' : 'IDLE',
+        status: status === 'CAPTURED' ? 'CAPTURED' : (status === 'DECEASED' ? 'DECEASED' : 'IDLE'),
         experience: { increment: xpReward }
       }
     }))

@@ -94,7 +94,7 @@ I have implemented the foundational systems for "Hitman Hotline," including the 
 - **Persistent Operations:** Missions are now persisted in the SQLite database, ensuring operational continuity across server restarts.
 - **COO Dashboard Integration:**
     - **Live Countdown Timers:** Active missions display real-time progress bars and phase status (Infiltration, Objective, Extraction).
-    - **Mission Authorization:** A functional "Available Contracts" interface allowing users to deploy assets directly from the COO hub.
+    - **Mission Authorisation:** A functional "Available Contracts" interface allowing users to deploy assets directly from the COO hub.
     - **Real-time Sync:** The UI automatically polls for results upon mission completion, updating the agency's balance, reputation, and staff experience immediately.
 - **Seeded Data:** Initial missions ("First Blood", "Data Heist", "Social Infiltration") have been added to the world map.
 
@@ -105,11 +105,16 @@ I have implemented the foundational systems for "Hitman Hotline," including the 
 - **Red Phone Integration:** Added a "Red Phone" status indicator to the dashboard header that pulses and "rings" when new urgent tasks are available.
 - **Background Generator:** The server now features a task generator that periodically populates the inbox with fresh inter-office drama and corporate reports.
 
-### 11. Onboarding & Global Debriefs
-- **Automated Agency Setup:** Implemented a "First Boot" initialization flow. New players now automatically start with **$5,000** in capital and **Agent 47** (Senior Asset) pre-recruited to their roster.
+### 11. Onboarding & Starter Tasks
+- **Automated Agency Setup:** Implemented a "First Boot" initialisation flow. New players now start with **$5,000** in capital and **Agent 47** (Senior Asset) as their lone operative. No support staff are provided initially, allowing the user to choose their own team.
+- **Starter Objectives:** CEOs can earn another **$5,000** in bonus capital by completing 5 basic tasks:
+    - Set Company Name ($1k)
+    - Start a Mission ($1k)
+    - Complete an Admin Task ($1k)
+    - Invite a Friend ($1k)
+    - Hire first Support Staff ($1k)
 - **Global Toast System:** Created a high-visibility notification system that provides real-time updates across all executive offices.
-- **Cross-App Communication:** Whether you are in the CFO's office or the Talent Pool, a red "Classified" toast will notify you the second a mission resolves or an urgent CEO directive arrives.
-- **Persistence Hardening:** Updated the database schema to handle asset flavour text, career history, and career awards (e.g., Employee of the Month) persistently.
+- **Persistence Hardening:** Updated the database schema to handle asset flavour text, career history, and career awards persistently.
 
 ### 13. User Account Hub & Official Registration
 - **Director Profile:** Implemented a dedicated Account Hub where the CEO can update their username, email, and encryption key (password).
@@ -132,3 +137,13 @@ I have implemented the foundational systems for "Hitman Hotline," including the 
 - **Server Build:** Verified with `npm run build` after fixing `tsconfig.json` and installing missing dependencies.
 - **Client Build:** Verified with `npm run build` after cleaning up empty placeholder files and setting up Tailwind CSS.
 - **UI Responsiveness:** Layout designed with mobile-first breakpoints (`md:`, `sm:`) to ensure usability on all devices.
+
+### 15. Project Refinement & Standardisation
+- **UK English Standardisation:** All documentation and user-facing text have been updated to use UK English (e.g., *colour*, *specialise*, *initialise*).
+- **Codebase Clean-up:**
+    - Removed all AI-generated comments and emojis from the source code, console logs, and notifications for a clean, professional aesthetic.
+    - Centralised all styling into external CSS files (`layout.css`, `components.css`, `pages.css`), removing all inline Tailwind and component-specific styles.
+- **Dependency Audit:** Verified and ensured all packages in `package.json` are properly imported and utilised.
+- **Visual Improvements:** Replaced the gold star character with a CSS-based badge for better cross-platform consistency.
+- **Database Synchronisation:** Resolved schema drift issues by hard-resetting the SQLite database to a clean baseline, ensuring all columns (`flavourText`, `escrowBalance`, etc.) are correctly mapped and persisted.
+- **Build Integrity:** Fixed critical issues with duplicate exports and broken string literals caused by the automated cleanup pass, ensuring a 100% successful build for both Android and Web platforms.

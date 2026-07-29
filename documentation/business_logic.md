@@ -13,7 +13,7 @@ Staff with 5 points in all skills have their salary reflect their elite status.
 
 ### Specials:
 Staff and recruits can have "Specials" (e.g., +5% Charisma, +5% Hacking).
-Recruits older than 30 come with a pre-defined specialization.
+Recruits older than 30 come with a pre-defined specialisation.
 
 ## Staff Seniority & Progression
 All staff progress through seniority tiers based on mission experience and skill levels:
@@ -25,36 +25,77 @@ All staff progress through seniority tiers based on mission experience and skill
 ## Mission Engine Protocols
 The Mission Engine is the heart of the agency, resolving field operations in real-time.
 
-### 1. Resolution Logic
+### 1. Intelligence-Led Resolution
+Missions are no longer static; they are influenced by "Shadow Levels" and Intel gathering.
+- **Difficulty (1-10):** This is the **Skill Gate**. It dictates the skill points required for success. Higher difficulty reduces the success chance for the same agent stats.
+- **Risk (1-10):** This is the **Price of Failure**. It dictates the severity of consequences if a mission fails.
+    - *Low Risk (1-3):* Minor reputation loss and financial penalties.
+    - *High Risk (7-10):* Significant danger of agents being **Captured** or **Killed**.
+- **Hidden Threats:** Every mission has a "Security Rating." Low intel only shows base difficulty. High intel reveals specific threats (e.g., "Advanced Biometrics").
+- **Synergy Bonus:** Matching agent skills to specific threats (e.g., Tech for Biometrics) provides a +25% success boost.
+- **Loud vs. Quiet:** Using a "loud" solution (Combat) on a "stealth" mission (Intelligence) may succeed but doubles the agent's **Wanted Rating** (Heat).
+- **Mission Evolution (Decay):** Missions that are ignored evolve over 24 hours. A simple "Data Heist" may become a "Security Breach Investigation" as the target tightens security, making it significantly harder.
+
+### 2. Resolution Logic
 When a mission timer reaches zero, the engine executes the following:
-- **Success Check:** (Assigned Skills / Difficulty) + Seniority Bonus.
+- **Success Check:** (Assigned Skills / Difficulty) + Seniority Bonus + **Synergy Bonus**.
 - **Outcome Tiers:**
-    - **CRITICAL SUCCESS:** Bonus Rewards + Seniority XP Boost.
+    - **CRITICAL SUCCESS:** Bonus Rewards + Seniority XP Boost + **Blueprint Fragment**.
     - **SUCCESS:** Standard Payout + Experience.
     - **PARTIAL FAILURE:** Half Payout + High Heat Increase.
     - **CRITICAL FAILURE:** Zero Payout + **Capture Risk** + Agency Reputation Loss.
 
-### 2. The Senior Extension Prompt
-For Senior+ assets, a successful resolution triggers an **Intelligence Window**:
-- Operative identifies a "Secondary Objective."
-- **Window:** 60-second real-time window for the CEO to authorise an extension.
-- **Risk:** If authorised, a new timer starts with +50% Difficulty and +200% Reward.
-
 ### 3. Rewards & Experience
 - **Experience:** Calculated as `(Mission Difficulty * 10) * (Success Tier Multiplier)`.
-- **Payouts:** Deposited directly into Agency Capital.
-- **Capture Mechanic:** Hitmen aren't killed. If a mission fails badly, they may be captured.
-    - Captured hitmen can be traded back for money/intel.
-    - Captors can attempt to make them defect.
+- **Payouts (Dirty Cash):** Payouts are initially "Dirty." See [corporate_evolution.md](file:///home/tom/Code/hitmanhotline/documentation/corporate_evolution.md) for laundering mechanics.
+- **Risk & Consequences:**
+    - **Capture:** Failed missions carry a risk of capture. Captured agents can be traded back or may attempt to defect.
+    - **Defection:** Overworked, stressed, or dissatisfied agents may defect.
+    - **Death:** Agents can die in high-risk operations. If the agency has **Insurance**, a payout is triggered.
+    - **Wanted Rating:** Missions increase an agent's "Star Rating." At 5 stars, an agent must lay low (hand themselves in for a season or train recruits) until the rating drops.
+
+### 4. Loyalty & Retention
+- **Loyalty Passport:** Every agent has a "Passport" with a 10-slot loyalty card.
+- **Retention:** Earning loyalty points reduces the chance of defection. At 10 slots filled, the agent is 0% likely to defect.
+- **Specialised Defection Risks:** Specific roles have higher base defection chances (e.g., Firearms, Scouting, Interrogation, Protection).
+
+## 🌍 World Events & Funding
+The Agency can secure additional funds by participating in or exploiting global milestones:
+- **Major Summits:** G20, UN General Assembly, World Economic Forum, Asean Summit, Nato Summit.
+- **Security Events:** Munich Security Conference.
+- **Global Spectacles:** Olympic Games.
+- **Diplomatic Milestones:** Bilateral state visits, Government Funerals.
+- **Thematic Events:** Global Health Summit, National Days.
+
+## 🔬 Research & Strategy
+The CTO and COO offices collaborate on expanding the agency's capabilities:
+- **Methods of Attack:** Researching new ways to strike targets.
+- **Arsenal Expansion:** Weapons, new room builds, and creating new staff specialities.
+- **Geopolitical Expansion:** Discovering new continents and identifying structures of interest (creating time-limited missions).
+- **Strategic Doctrines:** Developing high-level field strategies.
 
 ## Economy & Sponsors
-- **Sponsorship Levels:**
-    - Knives: $100/day
-    - Pistols: $200/day
-    - SMGs: $300/day
-    - Rifles: $400/day
-- **Flexible Design:** Sponsors provide weapons, armor, or rent coverage.
-- **Duration:** Last for 1 day or 1 week.
+- **Sponsorship Challenges:** Sponsors no longer provide passive income only. They issue specific performance-based contracts:
+    - **Operational:** "Complete 10 Wetwork missions this week."
+    - **Growth:** "Promote 2 Junior agents to Mid-Level."
+    - **Efficiency:** "Earn $20k with 0 mission failures."
+- **Rewards:** Successfully completing a challenge grants a bulk payout or unique equipment blueprints.
+- **Micro-Incentives:** Some sponsors provide a per-mission bonus (e.g., "$100 per mission completed").
+
+## 🏦 Banking & Liquidity (CFO Office)
+
+The CFO provides essential banking services to keep the agency operational during dry spells.
+
+### 💳 Emergency Loans
+CEOs have access to 3 standard loan tiers to bridge gaps in cash flow:
+1. **The "Seed" Loan:** $5,000 (Low interest). Ideal for initial roster expansion.
+2. **The "Growth" Loan:** $25,000 (Moderate interest). Used for building new rooms.
+3. **The "Enterprise" Loan:** $100,000 (Market interest). For continental expansion.
+
+**Protocols:**
+- **Simultaneous Loans:** All 3 tiers can be taken at once.
+- **Lock-out:** Once a loan is active, that tier is unavailable until the principal plus interest is repaid.
+- **Repayment:** Loans can be repaid instantly at any time to restore tier availability.
 
 ## Recruitment & The Market
 - **Scouting:** Better scouts find higher potential recruits.
@@ -85,6 +126,20 @@ All agency liabilities are settled once a week on **Monday at 09:00 UTC**.
 If balance hits $0 and no loans are available:
 - **Asset Liquidation:** Forced sale of hitmen/equipment at 50% market value.
 - **The Long Climb:** The CEO must handle high-risk "Desperation Tasks" to return to the black.
+
+## 🏢 Corporate Evolution & Compliance
+To maintain maximum profit, the CEO must manage the agency's legal entity and tax efficiency.
+- **Thresholds**: Increasing staff size or revenue triggers the need for restructuring.
+- **Tax Brackets**: Scaling from Sole Trader to PLC reduces effective tax but increases admin overhead.
+- **Penalties**: Failing to restructure before crossing a threshold results in "Penalty Taxation" and increased Heat.
+- **Documentation**: See [corporate_evolution.md](file:///home/tom/Code/hitmanhotline/documentation/corporate_evolution.md) for full details.
+
+## 🤝 Social Virality
+The agency grows faster through networking.
+- **Referrals**: Invite friends for mutual financial bonuses and exclusive assets.
+- **Influencers**: Public uplink links for streamers with reward caps and prestige conversion.
+- **Duo Contracts**: Unlock cooperative missions with referred affiliates.
+- **Documentation**: See [social_mechanics.md](file:///home/tom/Code/hitmanhotline/documentation/social_mechanics.md) for full details.
 
 ## PvP (Agency Rivalry)
 - **Intel Raids:** Send hitmen to steal resources or intel from other player agencies.

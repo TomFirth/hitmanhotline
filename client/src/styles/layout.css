@@ -1,6 +1,21 @@
 @tailwind components;
+@tailwind utilities;
 
 @layer components {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #1f2937; /* gray-800 */
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #8b0000; /* hitman-red */
+  }
+
   .app-container {
     @apply min-h-screen bg-hitman-black flex flex-col md:flex-row text-gray-300 font-sans selection:bg-hitman-red selection:text-white;
   }
@@ -10,11 +25,15 @@
   }
 
   .sidebar-header {
-    @apply mb-8 group;
+    @apply mb-8;
   }
 
   .brand-logo {
-    @apply text-2xl font-black text-white italic tracking-tighter transition-all group-hover:tracking-normal;
+    @apply text-2xl font-black text-white italic tracking-tighter transition-all;
+  }
+
+  .brand-logo-hover {
+    @apply tracking-normal;
   }
 
   .brand-accent {
@@ -70,11 +89,15 @@
   }
 
   .nav-section-button {
-    @apply flex items-center justify-between px-3 py-2 text-gray-400 hover:text-white hover:bg-hitman-black/30 rounded transition-colors group;
+    @apply flex items-center justify-between px-3 py-2 text-gray-400 hover:text-white hover:bg-hitman-black/30 rounded transition-colors;
   }
 
   .nav-section-icon {
-    @apply text-hitman-red group-hover:scale-110 transition-transform;
+    @apply text-hitman-red transition-transform;
+  }
+
+  .nav-section-icon-hover {
+    @apply scale-110;
   }
 
   .nav-section-info {
@@ -86,7 +109,11 @@
   }
 
   .nav-title {
-    @apply text-[11px] text-gray-500 group-hover:text-gray-300 transition-colors uppercase;
+    @apply text-[11px] text-gray-500 transition-colors uppercase;
+  }
+
+  .nav-title-hover {
+    @apply text-gray-300;
   }
 
   .nav-sub-list {

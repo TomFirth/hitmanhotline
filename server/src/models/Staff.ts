@@ -25,6 +25,11 @@ export enum Seniority {
   EXECUTIVE = 'EXECUTIVE',
 }
 
+export const AGENT_RETIREMENT_AGE = 35;
+export const STAFF_RETIREMENT_AGE = 65;
+export const PEAK_PERFORMANCE_AGE = 25;
+export const DEGRADATION_START_AGE = 30;
+
 export interface Staff {
   id: string;
   userId: string;
@@ -45,10 +50,21 @@ export interface Staff {
   awards?: string[];
 }
 
-export const calculateSalary = (skills: StaffSkills): number => {
+export const calculateSalary = (skills: StaffSkills, age: number, seniority: Seniority): number => {
   const totalSkills = Object.values(skills).reduce((acc, val) => acc + val, 0);
-  const isElite = Object.values(skills).every(s => s >= 5);
+
   const base = 100;
-  const multiplier = totalSkills * 20;
-  return isElite ? (base + multiplier) * 1.5 : base + multiplier;
+  const skillFactor = totalSkills * 25;
+  const ageBonus = Math.max(0, (age - 16) * 5);
+
+  const seniorityMultiplier = {
+    [Seniority.JUNIOR]: 1,
+    [Seniority.MID]: 1.5,
+    [Seniority.SENIOR]: 2,
+    [Seniority.EXECUTIVE]: 3,
+  };
+
+  const multiplier = seniorityMultiplier[seniority] || 1;
+
+  return Math.floor((base + skillFactor + ageBonus) * multiplier);
 };

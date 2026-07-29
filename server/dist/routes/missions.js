@@ -5,7 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const db_1 = __importDefault(require("../services/db"));
+const missionGenerator_1 = require("../services/missionGenerator");
 const router = (0, express_1.Router)();
+router.post('/refresh', async (req, res) => {
+    const count = 10;
+    const missions = (0, missionGenerator_1.generateMissionPool)(count);
+    await db_1.default.mission.deleteMany();
+    const created = [];
+    for (const m of missions) {
+        created.push(await db_1.default.mission.create({ data: m }));
+    }
+    res.json(created);
+});
 router.get('/available', async (req, res) => {
     const missions = await db_1.default.mission.findMany();
     res.json(missions);
@@ -21,17 +32,21 @@ router.post('/start', async (req, res) => {
     const mission = await db_1.default.mission.findUnique({ where: { id: missionId } });
     if (!mission)
         return res.status(404).json({ error: 'Mission not found' });
+    const targetUserId = userId || 'mock-user-id';
+    const user = await db_1.default.user.findUnique({ where: { id: targetUserId } });
+    if (!user) {
+        return res.status(403).json({ error: 'User registration not found. Please re-initialise.' });
+    }
     const activeMission = await db_1.default.activeMission.create({
         data: {
             missionId,
-            userId: userId || 'mock-user-id', // Temporary until full auth
+            userId: targetUserId,
             staffIds: staffIds.join(','),
             startTime: new Date(),
             endTime: new Date(Date.now() + mission.durationSeconds * 1000),
             status: 'IN_PROGRESS'
         }
     });
-    // Set staff to busy
     await db_1.default.staff.updateMany({
         where: { id: { in: staffIds } },
         data: { status: 'ON_MISSION' }

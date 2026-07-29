@@ -12,7 +12,6 @@ router.get('/', async (req, res) => {
     const tasks = await db_1.default.adminTask.findMany({
         where: { userId }
     });
-    // Parse options back to JSON for the client
     const parsedTasks = tasks.map(t => ({
         ...t,
         options: JSON.parse(t.options)
@@ -29,7 +28,6 @@ router.post('/resolve', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-// For testing purposes
 router.post('/generate', async (req, res) => {
     const userId = req.body.userId || 'mock-user-id';
     const task = await (0, adminTaskService_1.generateRandomTask)(userId);

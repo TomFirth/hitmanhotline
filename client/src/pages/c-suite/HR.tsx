@@ -3,12 +3,23 @@ import Layout from '../../components/Layout';
 import { useGameStore } from '../../store/useGameStore';
 import { Users, UserPlus, MessageSquare, Coffee } from 'lucide-react';
 import StaffCard from '../../components/StaffCard';
+import HelpOverlay from '../../components/HelpOverlay';
 
 const HRPage: React.FC = () => {
-  const { staff } = useGameStore();
+  const { staff, setStaff, setAgency } = useGameStore();
+
+  const refreshData = async () => {
+    const [staffRes, agencyRes] = await Promise.all([
+      fetch('/api/staff'),
+      fetch('/api/agency')
+    ]);
+    if (staffRes.ok) setStaff(await staffRes.json());
+    if (agencyRes.ok) setAgency(await agencyRes.json());
+  };
 
   return (
     <Layout>
+      <HelpOverlay context="HR" />
       <div className="p-4 md:p-8 max-w-7xl mx-auto pt-20 md:pt-8">
         <header className="mb-8 flex justify-between items-end">
           <div>
@@ -21,10 +32,10 @@ const HRPage: React.FC = () => {
             </h1>
           </div>
           <div className="hidden md:flex gap-4">
-             <button className="flex items-center gap-2 px-4 py-2 bg-hitman-gray border border-gray-800 rounded text-[10px] uppercase font-bold hover:border-hitman-red transition-colors">
+             <button className="flex items-center gap-2 px-4 py-2 bg-hitman-gray border border-gray-800 rounded text-[10px] uppercase font-bold hover:border-hitman-red transition-colours">
                 <Coffee size={14} /> Schedule 1:21
              </button>
-             <button className="flex items-center gap-2 px-4 py-2 bg-hitman-gray border border-gray-800 rounded text-[10px] uppercase font-bold hover:border-hitman-red transition-colors">
+             <button className="flex items-center gap-2 px-4 py-2 bg-hitman-gray border border-gray-800 rounded text-[10px] uppercase font-bold hover:border-hitman-red transition-colours">
                 <MessageSquare size={14} /> Agency Summit
              </button>
           </div>
@@ -40,7 +51,7 @@ const HRPage: React.FC = () => {
             {staff.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {staff.map(member => (
-                  <StaffCard key={member.id} staff={member} />
+                  <StaffCard key={member.id} staff={member} onAction={refreshData} />
                 ))}
               </div>
             ) : (

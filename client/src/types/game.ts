@@ -57,6 +57,17 @@ export interface Staff {
   backstory?: string;
   flavourText?: string;
   awards?: string[];
+  lastSalaryReview?: string;
+
+  
+  auctionExpiry?: string;
+  startingPrice?: number;
+  auctionBids?: {
+    id: string;
+    userId: string;
+    amount: number;
+    user: User;
+  }[];
 }
 
 export interface Mission {

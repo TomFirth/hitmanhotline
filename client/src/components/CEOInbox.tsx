@@ -91,7 +91,7 @@ const CEOInbox: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setSelectedTask(null)}
-                  className="text-gray-600 hover:text-white transition-colors"
+                  className="text-gray-600 hover:text-white transition-colours"
                 >
                   <Trash2 size={16} />
                 </button>

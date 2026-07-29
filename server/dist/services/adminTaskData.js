@@ -12,22 +12,22 @@ exports.ADMIN_TASK_TEMPLATES = [
             {
                 label: 'Buy a new one ($50)',
                 impact: { cash: -50, morale: 2 },
-                flavorResponse: 'A new silenced stapler has been issued. Tensions have subsided.'
+                flavourResponse: 'A new silenced stapler has been issued. Tensions have subsided.'
             },
             {
                 label: 'Mandatory frisking',
                 impact: { heat: 1, morale: -5 },
-                flavorResponse: 'The stapler was not found, but everyone is now very uncomfortable.'
+                flavourResponse: 'The stapler was not found, but everyone is now very uncomfortable.'
             },
             {
                 label: 'Tell them to "handle it"',
                 impact: { morale: -10 },
-                flavorResponse: 'They handled it. There is now a suspicious hole in the breakroom drywall.'
+                flavourResponse: 'They handled it. There is now a suspicious hole in the breakroom drywall.'
             }
         ]
     },
     {
-        id: 'weaponized-umbrella',
+        id: 'weaponised-umbrella',
         category: 'FINANCE',
         sender: 'R&D Lead',
         subject: 'Expense Report: Tactical Umbrella',
@@ -36,12 +36,12 @@ exports.ADMIN_TASK_TEMPLATES = [
             {
                 label: 'Approve ($200)',
                 impact: { cash: -200, intel: 5 },
-                flavorResponse: 'Approved. R&D is delighted. It works well, even in light drizzle.'
+                flavourResponse: 'Approved. R&D is delighted. It works well, even in light drizzle.'
             },
             {
                 label: 'Deny',
                 impact: { cash: 0 },
-                flavorResponse: 'Denied. The researcher is now sulking in the server room.'
+                flavourResponse: 'Denied. The researcher is now sulking in the server room.'
             }
         ]
     },
@@ -55,12 +55,12 @@ exports.ADMIN_TASK_TEMPLATES = [
             {
                 label: 'Send gift basket ($100)',
                 impact: { cash: -100, heat: -5 },
-                flavorResponse: 'A basket of premium muffins has silenced the neighbors. For now.'
+                flavourResponse: 'A basket of premium muffins has silenced the neighbors. For now.'
             },
             {
                 label: 'Threaten them',
                 impact: { heat: 10 },
-                flavorResponse: 'They have withdrawn the complaint, but are now staring at the HQ from behind their curtains.'
+                flavourResponse: 'They have withdrawn the complaint, but are now staring at the HQ from behind their curtains.'
             }
         ]
     },
@@ -74,12 +74,12 @@ exports.ADMIN_TASK_TEMPLATES = [
             {
                 label: '"We Hit Different"',
                 impact: { reputation: 5 },
-                flavorResponse: 'The new slogan is a hit. Prestige increased.'
+                flavourResponse: 'The new slogan is a hit. Prestige increased.'
             },
             {
                 label: '"Satisfaction... or Else"',
                 impact: { heat: 2, reputation: 2 },
-                flavorResponse: 'A bit aggressive, but people are certainly paying attention.'
+                flavourResponse: 'A bit aggressive, but people are certainly paying attention.'
             }
         ]
     },
@@ -93,7 +93,7 @@ exports.ADMIN_TASK_TEMPLATES = [
             {
                 label: 'Acknowledge',
                 impact: { intel: 2 },
-                flavorResponse: 'Logged. We should keep an eye on their remaining assets.'
+                flavourResponse: 'Logged. We should keep an eye on their remaining assets.'
             }
         ]
     }

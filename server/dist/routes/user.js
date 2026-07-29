@@ -35,7 +35,7 @@ router.post('/update-profile', async (req, res) => {
             data: {
                 username,
                 email,
-                password // Should be hashed in production
+                password
             }
         });
         res.json(updatedUser);

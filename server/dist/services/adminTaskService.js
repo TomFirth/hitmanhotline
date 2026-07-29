@@ -31,41 +31,35 @@ const resolveTask = async (taskId, optionIndex) => {
     const selectedOption = options[optionIndex];
     if (!selectedOption)
         throw new Error('Invalid option selected');
-    // Apply impacts
     const { impact } = selectedOption;
     await db_1.default.user.update({
         where: { id: task.userId },
         data: {
             balance: { increment: impact.cash || 0 },
             reputation: { increment: impact.reputation || 0 }
-            // Morale, Heat, and Intel impacts would update other agency stats
         }
     });
-    // Delete the task (email deleted after decision)
     await db_1.default.adminTask.delete({
         where: { id: taskId }
     });
     return {
         response: selectedOption.label,
-        flavorResponse: selectedOption.flavorResponse,
+        flavourResponse: selectedOption.flavourResponse,
         impact
     };
 };
 exports.resolveTask = resolveTask;
 const startTaskGenerator = () => {
-    console.log('CEO Inbox Service Initialized [Mode: Daily Briefing Generator]');
-    // Generate a task every 12 hours (43,200,000 ms)
-    // This supports the 1-2 tasks per day target.
+    console.log('CEO Inbox Service Initialised [Mode: Daily Briefing Generator]');
     setInterval(async () => {
         const users = await db_1.default.user.findMany();
         const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
         for (const user of users) {
-            // Only generate if user was active in the last 5 minutes
             if (user.lastActiveAt < fiveMinutesAgo) {
                 continue;
             }
             const taskCount = await db_1.default.adminTask.count({ where: { userId: user.id } });
-            if (taskCount < 3) { // Max 3 unread tasks to avoid clutter
+            if (taskCount < 3) {
                 await (0, exports.generateRandomTask)(user.id);
                 console.log(`Generated daily briefing task for active user: ${user.username}`);
             }
