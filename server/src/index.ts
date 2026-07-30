@@ -5,6 +5,7 @@ import missionRoutes from './routes/missions';
 import adminTaskRoutes from './routes/adminTasks';
 import userRoutes from './routes/user';
 import auctionRoutes from './routes/auction';
+import transactionRoutes from './routes/transactions';
 import { startEngine } from './services/missionEngine';
 import { startTaskGenerator } from './services/adminTaskService';
 import { ensureMinimumContent } from './services/populationService';
@@ -28,16 +29,7 @@ app.use('/api/missions', missionRoutes);
 app.use('/api/tasks', adminTaskRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/auction', auctionRoutes);
-
-app.get('/api/agency', (_req: Request, res: Response) => {
-  res.json({
-    name: 'The Hotline',
-    level: 1,
-    hitmen: 1,
-    money: 5000,
-    reputation: 10,
-  });
-});
+app.use('/api/transactions', transactionRoutes);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

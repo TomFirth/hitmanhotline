@@ -80,6 +80,8 @@ export interface Mission {
   cashReward: number;
   intelReward: number;
   riskLevel: number;
+  requiredSpeciality?: string;
+  requiredStaffCount?: number;
 }
 
 export interface ActiveMission {
@@ -89,7 +91,16 @@ export interface ActiveMission {
   staffIds: string;
   startTime: string;
   endTime: string;
-  status: 'IN_PROGRESS' | 'SUCCESS' | 'FAILURE' | 'CAPTURED';
+  status: 'IN_PROGRESS' | 'SUCCESS' | 'FAILURE' | 'CAPTURED' | 'DECEASED';
+  outcomeDetails?: string;
+}
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  type: 'INCOME' | 'EXPENSE';
+  description: string;
+  createdAt: string;
 }
 
 export interface AdminTask {

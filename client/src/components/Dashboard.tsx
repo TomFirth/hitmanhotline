@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useGameStore } from '../store/useGameStore';
 import StaffCard from './StaffCard';
 import CEOInbox from './CEOInbox';
@@ -8,12 +8,11 @@ import ActiveMissionCard from './ActiveMissionCard';
 
 const Dashboard: React.FC = () => {
   const {
-    agency, staff, activeMissions, isOnline,
-    setOnlineStatus, setAgency, setStaff, setAdminTasks, setActiveMissions
+    agency, staff, activeMissions, missionTemplates, isOnline,
+    setOnlineStatus, setAgency, setStaff, setAdminTasks, setActiveMissions, setMissionTemplates
   } = useGameStore();
 
   const [marketCount, setMarketCount] = useState(0);
-  const [availableMissions, setAvailableMissions] = useState<any[]>([]);
 
   useEffect(() => {
     const handleOnline = () => setOnlineStatus(true);
@@ -25,13 +24,14 @@ const Dashboard: React.FC = () => {
     if (isOnline) {
       const fetchData = async () => {
         try {
-          const [agencyRes, staffRes, taskRes, activeMissionsRes, marketRes, availableRes] = await Promise.all([
+          const [agencyRes, staffRes, taskRes, activeMissionsRes, marketRes, availableRes, allMissionsRes] = await Promise.all([
             fetch('/api/user/me?userId=mock-user-id'),
             fetch('/api/staff'),
             fetch('/api/tasks'),
             fetch('/api/missions/active'),
             fetch('/api/staff/pool'),
-            fetch('/api/missions/available')
+            fetch('/api/missions/available'),
+            fetch('/api/missions/available') // We use this as templates for now
           ]);
 
           let currentAgency = null;
@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
           if (taskRes.ok) setAdminTasks(await taskRes.json());
           if (activeMissionsRes.ok) setActiveMissions(await activeMissionsRes.json());
           if (marketRes.ok) setMarketCount((await marketRes.json()).length);
-          if (availableRes.ok) setAvailableMissions(await availableRes.json());
+          if (allMissionsRes.ok) setMissionTemplates(await allMissionsRes.json());
         } catch (error) {
           console.error('Error fetching dashboard data:', error);
         }
@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [isOnline, setOnlineStatus, setAgency, setStaff, setAdminTasks, setActiveMissions]);
+  }, [isOnline, setOnlineStatus, setAgency, setStaff, setAdminTasks, setActiveMissions, setMissionTemplates]);
 
   const weeklyOutgoings = staff.reduce((acc, s) => acc + (s.salary * 7), 0);
 
@@ -76,9 +76,24 @@ const Dashboard: React.FC = () => {
     .slice(0, 3);
 
   const incomingForecast = activeMissions.reduce((acc, am) => {
-    const mission = availableMissions.find(m => m.id === am.missionId);
+    const mission = missionTemplates.find(m => m.id === am.missionId);
     return acc + (mission?.cashReward || 0);
   }, 0);
+
+  const handleMissionComplete = useCallback(async () => {
+    try {
+      const [agencyRes, staffRes, activeRes] = await Promise.all([
+        fetch('/api/user/me?userId=mock-user-id'),
+        fetch('/api/staff'),
+        fetch('/api/missions/active')
+      ]);
+      if (agencyRes.ok) setAgency(await agencyRes.json());
+      if (staffRes.ok) setStaff(await staffRes.json());
+      if (activeRes.ok) setActiveMissions(await activeRes.json());
+    } catch (error) {
+      console.error('Error syncing after mission completion:', error);
+    }
+  }, [setAgency, setStaff, setActiveMissions]);
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 pb-20">
@@ -129,16 +144,15 @@ const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 gap-4">
               {sortedActive.length > 0 ? (
                 sortedActive.map(am => {
-                  const mission = availableMissions.find(m => m.id === am.missionId);
+                  const mission = missionTemplates.find(m => m.id === am.missionId);
                   const assignedStaff = staff.filter(s => am.staffIds.split(',').includes(s.id));
-                  if (!mission) return null;
                   return (
                     <ActiveMissionCard
                       key={am.id}
                       activeMission={am}
-                      mission={mission}
+                      mission={mission || { name: 'Field Op', durationSeconds: 0 } as any}
                       staff={assignedStaff}
-                      onComplete={() => {}}
+                      onComplete={handleMissionComplete}
                     />
                   );
                 })

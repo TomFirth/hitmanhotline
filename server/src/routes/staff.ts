@@ -9,7 +9,16 @@ const router = Router();
 
 
 router.get('/', async (req: Request, res: Response) => {
-  
+  try {
+    const staff = await prisma.staff.findMany();
+    const formattedStaff = staff.map(s => ({
+      ...s,
+      awards: s.awards ? s.awards.split(',') : []
+    }));
+    res.json(formattedStaff);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch staff' });
+  }
 });
 
 router.post('/init-agency', async (req: Request, res: Response) => {

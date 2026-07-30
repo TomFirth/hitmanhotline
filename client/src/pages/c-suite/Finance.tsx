@@ -5,7 +5,15 @@ import { DollarSign, TrendingUp, PieChart, ReceiptText } from 'lucide-react';
 import HelpOverlay from '../../components/HelpOverlay';
 
 const FinancePage: React.FC = () => {
-  const { agency, staff } = useGameStore();
+  const { agency, staff, transactions, setTransactions } = useGameStore();
+
+  React.useEffect(() => {
+    const fetchTransactions = async () => {
+      const res = await fetch('/api/transactions?userId=mock-user-id');
+      if (res.ok) setTransactions(await res.json());
+    };
+    fetchTransactions();
+  }, [setTransactions]);
 
   return (
     <Layout>
@@ -63,8 +71,26 @@ const FinancePage: React.FC = () => {
             </h2>
             <button className="text-[10px] text-gray-500 hover:text-white uppercase font-bold">Export CSV</button>
           </div>
-          <div className="p-8 text-center text-gray-600 italic text-sm">
-            No audit trails found for the current billing cycle.
+          <div className="p-4">
+             {transactions.length > 0 ? (
+               <div className="space-y-2">
+                  {transactions.map(t => (
+                    <div key={t.id} className="flex justify-between items-center bg-black/20 p-3 rounded border border-gray-800">
+                       <div>
+                          <p className="text-xs text-white font-bold uppercase">{t.description}</p>
+                          <p className="text-[9px] text-gray-600 uppercase font-mono">{new Date(t.createdAt).toLocaleString()}</p>
+                       </div>
+                       <span className={`font-mono text-sm ${t.type === 'INCOME' ? 'text-green-500' : 'text-red-500'}`}>
+                          {t.type === 'INCOME' ? '+' : '-'}${t.amount.toLocaleString()}
+                       </span>
+                    </div>
+                  ))}
+               </div>
+             ) : (
+               <div className="p-8 text-center text-gray-600 italic text-sm">
+                 No audit trails found for the current billing cycle.
+               </div>
+             )}
           </div>
         </section>
 

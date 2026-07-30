@@ -33,10 +33,10 @@ ssh barber@192.168.1.81 "cd ~/agency-os && docker compose up -d --build"
 
 ## 📂 Project Navigation
 Detailed documentation can be found in the `documentation/` directory:
-- [MVP Roadmap](documentation/mvp_roadmap.md)
-- [Business Logic & Mechanics](documentation/business_logic.md)
-- [Technical Walkthrough](documentation/walkthrough.md)
-- [Project Tasks](documentation/tasks.md)
+- [MVP Roadmap](ROADMAP.md)
+- [Business Logic & Mechanics](documentation/design/core_mechanics.md)
+- [Technical Walkthrough](documentation/project_history.md)
+- [Project Tasks](documentation/current_tasks.md)
 
 ---
 *Classified Information. Agency Eyes Only.*

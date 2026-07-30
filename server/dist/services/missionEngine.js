@@ -38,31 +38,42 @@ const resolveMission = async (activeMissionId) => {
     const successChance = Math.min(Math.max(baseRate, 0.1), 0.95);
     const roll = Math.random();
     let status = 'FAILURE';
+    let outcomeDetails = "Mission failure. Extraction complete.";
     let xpMultiplier = 1;
     if (roll < successChance * 0.2) {
         status = 'SUCCESS';
+        outcomeDetails = "Critical success. Objective secured, all agents extracted safely.";
         xpMultiplier = 2;
     }
     else if (roll < successChance) {
         status = 'SUCCESS';
+        outcomeDetails = "Success. Objective secured, agents returned safely.";
     }
     else {
         const riskRoll = Math.random();
         const riskFactor = mission.riskLevel / 10;
         if (riskRoll < riskFactor * 0.3) {
-            status = (mission.riskLevel >= 9 && Math.random() > 0.8) ? 'DECEASED' : 'CAPTURED';
+            if (mission.riskLevel >= 9 && Math.random() > 0.8) {
+                status = 'DECEASED';
+                outcomeDetails = "Catastrophic failure. Asset neutralized in field.";
+            }
+            else {
+                status = 'CAPTURED';
+                outcomeDetails = "Failure. Asset captured and held for ransom.";
+            }
         }
         else {
             status = 'FAILURE';
+            outcomeDetails = "Standard failure. Agents forced to extract prematurely.";
         }
     }
     const cashReward = status === 'SUCCESS' ? mission.cashReward : 0;
     const intelReward = status === 'SUCCESS' ? mission.intelReward : 0;
     const xpReward = Math.floor((mission.difficulty * 50) * xpMultiplier);
-    await db_1.default.$transaction([
+    const operations = [
         db_1.default.activeMission.update({
             where: { id: activeMissionId },
-            data: { status }
+            data: { status, outcomeDetails }
         }),
         db_1.default.user.update({
             where: { id: activeMission.userId },
@@ -74,11 +85,22 @@ const resolveMission = async (activeMissionId) => {
         ...assignedStaff.map(s => db_1.default.staff.update({
             where: { id: s.id },
             data: {
-                status: status === 'CAPTURED' ? 'CAPTURED' : (status === 'DECEASED' ? 'DECEASED' : 'IDLE'),
+                status: (status === 'CAPTURED' || status === 'DECEASED') ? status : 'IDLE',
                 experience: { increment: xpReward }
             }
         }))
-    ]);
+    ];
+    if (cashReward > 0) {
+        operations.push(db_1.default.transaction.create({
+            data: {
+                userId: activeMission.userId,
+                amount: cashReward,
+                type: 'INCOME',
+                description: `Mission Payout: ${mission.name}`
+            }
+        }));
+    }
+    await db_1.default.$transaction(operations);
     return {
         status,
         rewards: { cash: cashReward, intel: intelReward, xp: xpReward },

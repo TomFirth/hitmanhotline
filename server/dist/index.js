@@ -10,6 +10,7 @@ const missions_1 = __importDefault(require("./routes/missions"));
 const adminTasks_1 = __importDefault(require("./routes/adminTasks"));
 const user_1 = __importDefault(require("./routes/user"));
 const auction_1 = __importDefault(require("./routes/auction"));
+const transactions_1 = __importDefault(require("./routes/transactions"));
 const missionEngine_1 = require("./services/missionEngine");
 const adminTaskService_1 = require("./services/adminTaskService");
 const populationService_1 = require("./services/populationService");
@@ -29,15 +30,7 @@ app.use('/api/missions', missions_1.default);
 app.use('/api/tasks', adminTasks_1.default);
 app.use('/api/user', user_1.default);
 app.use('/api/auction', auction_1.default);
-app.get('/api/agency', (_req, res) => {
-    res.json({
-        name: 'The Hotline',
-        level: 1,
-        hitmen: 1,
-        money: 5000,
-        reputation: 10,
-    });
-});
+app.use('/api/transactions', transactions_1.default);
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });

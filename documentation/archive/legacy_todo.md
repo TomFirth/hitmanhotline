@@ -7,6 +7,7 @@ This roadmap tracks the evolution of the Hitman Startup simulator. Current focus
 - [x] **Global Shadow Map**: Build the COO hub for mission control and world-view briefings.
 - [x] **Financial Intelligence**: CFO dashboard for liquid assets, burn rates, and audit trails.
 - [x] **The Red Phone**: Implement the core "Hotline" for high-priority contract acquisition.
+- [x] **Financial Audits**: Implement transaction logging for payouts and hiring costs.
 - [x] **Official Registration**:
     - [x] **Incorporation Filings**: "Company House" style view of agency registration and history.
     - [x] **Legal Entities**: Support for Sole Trader, Ltd, and PLC structures with milestone triggers.

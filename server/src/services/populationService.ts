@@ -18,6 +18,30 @@ export const ensureMinimumContent = async () => {
         email: 'market@agency.com',
         username: 'The Market',
         password: 'placeholder_password',
+        agencyName: 'Shadow Market',
+        entityType: 'Global Exchange',
+        registrationNumber: 'MARKET-001',
+        registeredAddress: 'Encrypted Proxy'
+      }
+    });
+  }
+
+  let defaultUser = await prisma.user.findUnique({ where: { id: 'mock-user-id' } });
+  if (!defaultUser) {
+    console.log('Auditor: Creating default CEO account...');
+    await prisma.user.create({
+      data: {
+        id: 'mock-user-id',
+        email: 'ceo@agency.com',
+        username: 'Director Tom',
+        password: 'hashed_password',
+        agencyName: 'The Hotline',
+        balance: 5000,
+        reputation: 10,
+        registrationNumber: `HH-${Math.floor(Math.random() * 900 + 100)}-${Math.floor(Math.random() * 90 + 10)}`,
+        entityType: 'Sole Trader',
+        incorporationDate: new Date(),
+        registeredAddress: 'Sector 7G, Sub-Level 4, Agency HQ'
       }
     });
   }

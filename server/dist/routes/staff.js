@@ -10,6 +10,17 @@ const staffGenerator_1 = require("../services/staffGenerator");
 const db_1 = __importDefault(require("../services/db"));
 const router = (0, express_1.Router)();
 router.get('/', async (req, res) => {
+    try {
+        const staff = await db_1.default.staff.findMany();
+        const formattedStaff = staff.map(s => ({
+            ...s,
+            awards: s.awards ? s.awards.split(',') : []
+        }));
+        res.json(formattedStaff);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch staff' });
+    }
 });
 router.post('/init-agency', async (req, res) => {
     const userId = 'mock-user-id';

@@ -96,7 +96,17 @@ I have implemented the foundational systems for "Hitman Hotline," including the 
     - **Live Countdown Timers:** Active missions display real-time progress bars and phase status (Infiltration, Objective, Extraction).
     - **Mission Authorisation:** A functional "Available Contracts" interface allowing users to deploy assets directly from the COO hub.
     - **Real-time Sync:** The UI automatically polls for results upon mission completion, updating the agency's balance, reputation, and staff experience immediately.
-- **Seeded Data:** Initial missions ("First Blood", "Data Heist", "Social Infiltration") have been added to the world map.
+- **Seeded Data:** Initialised the world map with zero-risk beginner missions (*First Blood*, *Safe Cracker*, *The Courier*) starting at **$500** with **$100** increments to ensure a smooth onboarding experience.
+
+### 16. Operations UI Redesign & Mission Archive
+- **Two-Column Briefing System:** Redesigned the COO Operations page into a tactical "Select & Brief" interface:
+    - **Target Profiles (Left):** Browse available contracts and select targets for deep intelligence.
+    - **Mission Briefing (Right):** View detailed mission descriptions, explicit staff requirements (Speciality & Count), and risk profiles before authorisation.
+- **Operational Archive:** Implemented an archive block for completed and failed missions, providing a historical record of all agency operations.
+- **Improved UX:**
+    - Removed all web-based toasts to keep the desktop interface clean and focused.
+    - Automated the removal of authorised missions from the available pool.
+    - Added real-time success rate and risk level indicators within the briefing view.
 
 ### 10. CEO Admin Tasks & Secure Inbox
 - **Humorous "Busy Work" Loop:** Implemented the CEO Admin Task system to provide engaging decisions during long missions. Tasks are themed around corporate absurdity (e.g., "The Missing Silenced Stapler").
@@ -147,3 +157,11 @@ I have implemented the foundational systems for "Hitman Hotline," including the 
 - **Visual Improvements:** Replaced the gold star character with a CSS-based badge for better cross-platform consistency.
 - **Database Synchronisation:** Resolved schema drift issues by hard-resetting the SQLite database to a clean baseline, ensuring all columns (`flavourText`, `escrowBalance`, etc.) are correctly mapped and persisted.
 - **Build Integrity:** Fixed critical issues with duplicate exports and broken string literals caused by the automated cleanup pass, ensuring a 100% successful build for both Android and Web platforms.
+
+### 17. Financial Audits & Detailed Mission History
+- **Transaction Logging Engine:** Implemented a new `Transaction` model and server-side logic to track all agency income and expenses. Every mission payout and recruitment cost is now officially logged for financial intelligence.
+- **CFO "Recent Transactions":** Updated the Finances dashboard to display a live audit trail of the agency's 20 most recent transactions, including time-stamps and cash-flow indicators (Income vs Expense).
+- **Deep Operation Debriefs:** Overhauled the Mission Archive into a detailed "Post-Operation Report" system. Every archived mission now displays:
+    - **Outcome Details:** Descriptive flavor text explaining the results (e.g., *"Critical success. Objective secured, all agents extracted safely"*).
+    - **Asset Status:** Real-time feedback on unit extraction and payout security.
+- **CEO Dashboard Operational Sync:** Fixed the synchronisation bug to ensure active field operations are accurately reflected in the primary Strategic Oversight dashboard.

@@ -29,6 +29,17 @@ model User {
   activeMissions ActiveMission[]
   adminTasks     AdminTask[]
   auctionBids    AuctionBid[]
+  transactions   Transaction[]
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  amount      Int
+  type        String   // INCOME, EXPENSE
+  description String
+  createdAt   DateTime @default(now())
 }
 
 model Staff {
@@ -93,6 +104,7 @@ model ActiveMission {
   startTime  DateTime @default(now())
   endTime    DateTime
   status     String   @default("IN_PROGRESS") // IN_PROGRESS, SUCCESS, FAILURE, CAPTURED
+  outcomeDetails String? // e.g. "All agents returned safely"
 }
 
 model AdminTask {

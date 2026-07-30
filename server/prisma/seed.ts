@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
-import { createClient } from '@libsql/client';
 import "dotenv/config";
 
 const prisma = new PrismaClient({
@@ -10,7 +9,6 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  // Clear existing data
   await prisma.activeMission.deleteMany();
   await prisma.mission.deleteMany();
 
@@ -18,32 +16,32 @@ async function main() {
     {
       name: 'First Blood',
       type: 'WETWORK',
-      description: 'A simple elimination to get started.',
-      difficulty: 1,
-      durationSeconds: 60, // 1 minute for testing
-      cashReward: 1000,
+      description: 'A simple elimination to get started. Guaranteed success.',
+      difficulty: 0,
+      durationSeconds: 60,
+      cashReward: 500,
       intelReward: 0,
-      riskLevel: 1,
+      riskLevel: 0,
     },
     {
-      name: 'Data Heist',
+      name: 'Safe Cracker',
       type: 'CYBER',
-      description: 'Hack into a local server and steal some data.',
-      difficulty: 2,
-      durationSeconds: 300,
-      cashReward: 2500,
-      intelReward: 50,
-      riskLevel: 2,
+      description: 'Infiltrate a local small business and crack a simple safe.',
+      difficulty: 0,
+      durationSeconds: 120,
+      cashReward: 600,
+      intelReward: 5,
+      riskLevel: 0,
     },
     {
-      name: 'Social Infiltration',
+      name: 'The Courier',
       type: 'SOCIAL',
-      description: 'Attend a high-profile gala and gather intel.',
-      difficulty: 3,
-      durationSeconds: 600,
-      cashReward: 5000,
-      intelReward: 150,
-      riskLevel: 2,
+      description: 'Intercept a package without being noticed.',
+      difficulty: 0,
+      durationSeconds: 180,
+      cashReward: 700,
+      intelReward: 10,
+      riskLevel: 0,
     }
   ];
 
@@ -51,7 +49,7 @@ async function main() {
     await prisma.mission.create({ data: m });
   }
 
-  console.log('Seed completed: Initial missions created.');
+  console.log('Seed completed: Beginner missions created.');
 }
 
 main()

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Staff, ActiveMission, AdminTask, User } from '../types/game';
+import { Staff, ActiveMission, AdminTask, User, Transaction, Mission } from '../types/game';
 
 export interface GameNotification {
   id: string;
@@ -12,6 +12,9 @@ interface GameState {
   agency: User;
   staff: Staff[];
   activeMissions: ActiveMission[];
+  archivedMissions: ActiveMission[];
+  missionTemplates: Mission[];
+  transactions: Transaction[];
   adminTasks: AdminTask[];
   notifications: GameNotification[];
   isOnline: boolean;
@@ -20,8 +23,13 @@ interface GameState {
   setAgency: (agency: User) => void;
   setStaff: (staff: Staff[]) => void;
   setActiveMissions: (missions: ActiveMission[]) => void;
+  setArchivedMissions: (missions: ActiveMission[]) => void;
+  setMissionTemplates: (templates: Mission[]) => void;
+  setTransactions: (transactions: Transaction[]) => void;
   setAdminTasks: (tasks: AdminTask[]) => void;
   removeAdminTask: (taskId: string) => void;
+  resolveActiveMission: (result: ActiveMission) => void;
+  removeAvailableMission: (missionId: string) => void;
   addNotification: (type: GameNotification['type'], message: string) => void;
   removeNotification: (id: string) => void;
   setOnlineStatus: (status: boolean) => void;
@@ -48,6 +56,9 @@ export const useGameStore = create<GameState>()(
       },
       staff: [],
       activeMissions: [],
+      archivedMissions: [],
+      missionTemplates: [],
+      transactions: [],
       adminTasks: [],
       notifications: [],
       isOnline: navigator.onLine,
@@ -56,9 +67,19 @@ export const useGameStore = create<GameState>()(
       setAgency: (agency) => set({ agency }),
       setStaff: (staff) => set({ staff }),
       setActiveMissions: (activeMissions) => set({ activeMissions }),
+      setArchivedMissions: (archivedMissions) => set({ archivedMissions }),
+      setMissionTemplates: (missionTemplates) => set({ missionTemplates }),
+      setTransactions: (transactions) => set({ transactions }),
       setAdminTasks: (adminTasks) => set({ adminTasks }),
       removeAdminTask: (taskId) => set((state) => ({
         adminTasks: state.adminTasks.filter(t => t.id !== taskId)
+      })),
+      resolveActiveMission: (result) => set((state) => ({
+        activeMissions: state.activeMissions.filter(m => m.id !== result.id),
+        archivedMissions: [result, ...state.archivedMissions]
+      })),
+      removeAvailableMission: (missionId) => set((state) => ({
+        activeMissions: state.activeMissions.filter(m => m.missionId !== missionId)
       })),
       addNotification: (type, message) => set((state) => ({
         notifications: [...state.notifications, { id: Math.random().toString(36).substr(2, 9), type, message }]

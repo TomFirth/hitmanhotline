@@ -14,7 +14,9 @@ interface ActiveMissionCardProps {
 const ActiveMissionCard: React.FC<ActiveMissionCardProps> = ({ activeMission, mission, staff, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [phase, setPhase] = useState('INFILTRATION');
-  const { addNotification } = useGameStore();
+  const { addNotification, resolveActiveMission } = useGameStore();
+  const isResolving = React.useRef(false);
+  const hasNotified = React.useRef(false);
 
   useEffect(() => {
     const calculateTime = () => {
@@ -31,18 +33,29 @@ const ActiveMissionCard: React.FC<ActiveMissionCardProps> = ({ activeMission, mi
       else if (progress < 0.8) setPhase('OBJECTIVE');
       else setPhase('EXTRACTION');
 
-      if (remaining === 0) {
+      if (remaining === 0 && !isResolving.current && !hasNotified.current) {
+        isResolving.current = true;
         const checkStatus = async () => {
-          const res = await fetch(`/api/missions/status/${activeMission.id}`);
-          const data = await res.json();
-          if (data.status !== 'IN_PROGRESS') {
-            addNotification(
-              data.status === 'SUCCESS' ? 'SUCCESS' : 'FAILURE',
-              `Operation ${mission.name}: ${data.status} (+$${data.rewards?.cash || 0})`
-            );
-            onComplete(data);
-          } else {
-            setTimeout(checkStatus, 2000);
+          try {
+            const res = await fetch(`/api/missions/status/${activeMission.id}`);
+            if (!res.ok) throw new Error('Status check failed');
+            const data = await res.json();
+
+            if (data.status !== 'IN_PROGRESS' && !hasNotified.current) {
+              hasNotified.current = true;
+              addNotification(
+                data.status === 'SUCCESS' ? 'SUCCESS' : 'FAILURE',
+                `Operation ${mission.name}: ${data.status} (+$${data.rewards?.cash || 0})`
+              );
+              resolveActiveMission(data);
+              onComplete(data);
+            } else if (data.status === 'IN_PROGRESS') {
+              isResolving.current = false;
+              setTimeout(checkStatus, 2000);
+            }
+          } catch (error) {
+            isResolving.current = false;
+            setTimeout(checkStatus, 5000);
           }
         };
         checkStatus();
@@ -52,7 +65,7 @@ const ActiveMissionCard: React.FC<ActiveMissionCardProps> = ({ activeMission, mi
     calculateTime();
     const timer = setInterval(calculateTime, 1000);
     return () => clearInterval(timer);
-  }, [activeMission, mission.name, addNotification, onComplete]);
+  }, [activeMission, mission.name, addNotification, resolveActiveMission, onComplete]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

@@ -1,45 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '../../components/Layout';
-import { Briefcase, Globe, Target, AlertCircle } from 'lucide-react';
+import { Briefcase, Target, AlertCircle, Shield, Users, CheckCircle2 } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import ActiveMissionCard from '../../components/ActiveMissionCard';
-import { Mission } from '../../types/game';
+import { Mission, StaffType } from '../../types/game';
 import HelpOverlay from '../../components/HelpOverlay';
+import '../../styles/pages.css';
 
 const OperationsPage: React.FC = () => {
-  const { activeMissions, staff, setActiveMissions, setStaff, setAgency } = useGameStore();
+  const { activeMissions, archivedMissions, missionTemplates, staff, setActiveMissions, setArchivedMissions, setMissionTemplates, setStaff, setAgency } = useGameStore();
   const [availableMissions, setAvailableMissions] = useState<Mission[]>([]);
+  const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
+
+  const fetchMissions = useCallback(async () => {
+    try {
+      const [availableRes, activeRes, allMissionsRes] = await Promise.all([
+        fetch('/api/missions/available'),
+        fetch('/api/missions/active'),
+        fetch('/api/missions/available')
+      ]);
+      if (availableRes.ok && activeRes.ok) {
+        const available = await availableRes.json();
+        const active = await activeRes.json();
+
+        const activeMissionIds = active.map((m: any) => m.missionId);
+        setAvailableMissions(available.filter((m: any) => !activeMissionIds.includes(m.id)));
+
+        setActiveMissions(active.filter((m: any) => m.status === 'IN_PROGRESS'));
+        setArchivedMissions(active.filter((m: any) => m.status !== 'IN_PROGRESS'));
+      }
+      if (allMissionsRes.ok) setMissionTemplates(await allMissionsRes.json());
+    } catch (error) {
+      console.error('Error fetching missions:', error);
+    }
+  }, [setActiveMissions, setArchivedMissions, setMissionTemplates]);
 
   useEffect(() => {
-    const fetchMissions = async () => {
-      try {
-        const [availableRes, activeRes] = await Promise.all([
-          fetch('/api/missions/available'),
-          fetch('/api/missions/active')
-        ]);
-        if (availableRes.ok) setAvailableMissions(await availableRes.json());
-        if (activeRes.ok) setActiveMissions(await activeRes.json());
-      } catch (error) {
-        console.error('Error fetching missions:', error);
-      }
-    };
     fetchMissions();
-  }, [setActiveMissions]);
-
-  const handleRefreshMissions = async () => {
-    try {
-      const res = await fetch('/api/missions/refresh', { method: 'POST' });
-      if (res.ok) {
-        setAvailableMissions(await res.json());
-      }
-    } catch (error) {
-      console.error('Error refreshing missions:', error);
-    }
-  };
+  }, [fetchMissions]);
 
   const handleStartMission = async (missionId: string) => {
-    
-    const idleStaff = staff.filter(s => s.status === 'IDLE' && s.type === 'HITMAN').slice(0, 1);
+    const mission = availableMissions.find(m => m.id === missionId);
+    if (!mission) return;
+
+    const idleStaff = staff.filter(s => s.status === 'IDLE' && s.type === StaffType.HITMAN).slice(0, 1);
     if (idleStaff.length === 0) {
       alert("No idle field agents (Hitmen) available for this operation.");
       return;
@@ -55,108 +59,188 @@ const OperationsPage: React.FC = () => {
         })
       });
       if (res.ok) {
-        const newActive = await res.json();
-        setActiveMissions([...activeMissions, newActive]);
-        
-        const updatedStaff = staff.map(s =>
-          idleStaff.find(is => is.id === s.id) ? { ...s, status: 'ON_MISSION' as const } : s
-        );
-        
-        setStaff(updatedStaff);
-      } else {
-        const err = await res.json();
-        alert(err.error || "Failed to start mission.");
+        await fetchMissions();
+        setSelectedMission(null);
       }
     } catch (error) {
       console.error('Error starting mission:', error);
     }
   };
 
-  const handleMissionComplete = async (result: any) => {
-    
+  const handleMissionComplete = useCallback(async () => {
     try {
       const [agencyRes, staffRes] = await Promise.all([
-        fetch('/api/agency'),
+        fetch('/api/user/me?userId=mock-user-id'),
         fetch('/api/staff')
       ]);
       if (agencyRes.ok) setAgency(await agencyRes.json());
       if (staffRes.ok) setStaff(await staffRes.json());
 
-      
-      setActiveMissions(activeMissions.filter(m => m.id !== result.id));
-
-      
-      alert(`Mission Resolved: ${result.status}\nRewards: $${result.rewards?.cash || 0}, ${result.rewards?.xp || 0} XP`);
+      await fetchMissions();
     } catch (error) {
       console.error('Error syncing after mission completion:', error);
     }
-  };
+  }, [setAgency, setStaff, fetchMissions]);
+
   return (
     <Layout>
       <HelpOverlay context="OPERATIONS" />
-      <div className="p-4 md:p-8 max-w-7xl mx-auto pt-20 md:pt-8">
-        <header className="mb-8">
+      <div className="page-layout">
+        <header className="section-header">
           <div className="flex items-center gap-2 mb-1">
             <Briefcase className="text-hitman-red" size={20} />
-            <span className="text-[10px] font-black tracking-[0.3em] text-gray-500 uppercase">Office of the COO</span>
+            <span className="office-header">Office of the COO</span>
           </div>
-          <h1 className="text-4xl font-black text-white uppercase tracking-tighter italic">
+          <h1 className="page-title">
             Mission <span className="text-hitman-red">Control</span>
           </h1>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <section className="bg-hitman-gray border border-gray-800 rounded-lg overflow-hidden h-96 relative group">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                <Globe size={64} className="text-gray-800 mb-4 animate-[pulse_4s_infinite]" />
-                <h3 className="text-white font-bold uppercase tracking-[0.2em] mb-2">Global Heat Map</h3>
-                <p className="text-gray-500 text-xs max-w-xs">Sat-link offline. Connecting to shadow network...</p>
-                <div className="mt-6 flex gap-2">
-                  <div className="w-2 h-2 rounded-full bg-hitman-red animate-ping"></div>
-                  <div className="w-2 h-2 rounded-full bg-hitman-red animate-ping [animation-delay:0.5s]"></div>
-                  <div className="w-2 h-2 rounded-full bg-hitman-red animate-ping [animation-delay:1s]"></div>
-                </div>
-              </div>
-              <div className="absolute top-4 left-4 bg-black/60 px-2 py-1 rounded text-[10px] text-green-500 font-mono">
-                COORD: 51.5074° N, 0.1278° W
-              </div>
-            </section>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <section className="bg-hitman-gray border border-gray-800 p-6 rounded-lg">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-white font-bold uppercase text-xs tracking-widest flex items-center gap-2">
-                    <Target size={16} className="text-hitman-red" />
-                    Available Contracts
-                  </h3>
-                  <button
-                    onClick={handleRefreshMissions}
-                    className="text-[9px] text-gray-500 hover:text-white uppercase font-bold tracking-widest underline"
-                  >
-                    Refresh
-                  </button>
-                </div>
-                <div className="space-y-4">
+              <section className="bg-hitman-gray border border-gray-800 p-6 rounded-lg h-[600px] flex flex-col">
+                <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
+                  <Target size={16} className="text-hitman-red" />
+                  Available Contracts
+                </h3>
+                <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
                   {availableMissions.map(m => (
-                    <div key={m.id} className="p-3 bg-black/20 rounded border border-gray-700 flex justify-between items-center group hover:border-hitman-red transition-all">
-                       <div>
-                          <p className="text-xs text-white font-bold uppercase">{m.name}</p>
-                          <p className="text-[10px] text-gray-500 font-mono tracking-tighter">${m.cashReward} | {m.durationSeconds / 60}m</p>
+                    <div
+                      key={m.id}
+                      className={`p-3 rounded border transition-all cursor-pointer ${
+                        selectedMission?.id === m.id
+                          ? 'bg-hitman-red/20 border-hitman-red shadow-[0_0_10px_rgba(139,0,0,0.2)]'
+                          : 'bg-black/20 border-gray-700 hover:border-gray-500'
+                      }`}
+                      onClick={() => setSelectedMission(m)}
+                    >
+                       <div className="flex justify-between items-center">
+                          <div>
+                             <p className="text-xs text-white font-bold uppercase">{m.name}</p>
+                             <p className="text-[10px] text-gray-500 font-mono tracking-tighter">${m.cashReward} | {m.durationSeconds / 60}m</p>
+                          </div>
+                          <span className="text-[9px] font-black text-hitman-red uppercase tracking-widest">Select</span>
                        </div>
-                       <button
-                        onClick={() => handleStartMission(m.id)}
-                        className="text-[9px] bg-hitman-red px-2 py-1 rounded text-white font-black hover:bg-red-700 transition-colours uppercase"
-                       >
-                         Authorise
-                       </button>
                     </div>
                   ))}
+                  {availableMissions.length === 0 && (
+                    <div className="text-center py-20 text-gray-600 text-[10px] uppercase font-bold tracking-widest">
+                       Mission Board Empty
+                    </div>
+                  )}
                 </div>
               </section>
 
-              <section className="bg-hitman-gray border border-gray-800 p-6 rounded-lg">
+              <section className="bg-hitman-gray border border-gray-800 rounded-lg p-6 h-[600px] flex flex-col">
+                 <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
+                   <Shield size={16} className="text-blue-500" />
+                   Mission Briefing
+                 </h3>
+                 {selectedMission ? (
+                   <div className="flex flex-1 flex-col animate-in fade-in slide-in-from-right-4 duration-300">
+                      <div className="mb-6">
+                         <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none mb-2">{selectedMission.name}</h2>
+                         <div className="inline-block bg-hitman-red/10 text-hitman-red text-[10px] font-black px-2 py-0.5 rounded border border-hitman-red/20 uppercase tracking-widest">
+                            {selectedMission.type}
+                         </div>
+                      </div>
+
+                      <div className="bg-black/30 p-4 rounded border border-gray-800 mb-6 flex-1">
+                         <p className="text-xs text-gray-400 font-serif italic leading-relaxed mb-6">"{selectedMission.description}"</p>
+
+                         <div className="space-y-4">
+                            <div>
+                               <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest mb-1">Authorisation Requirements</p>
+                               <div className="flex gap-2">
+                                  <div className="bg-hitman-gray border border-gray-700 px-3 py-1.5 rounded flex items-center gap-2">
+                                     <Users size={12} className="text-gray-500" />
+                                     <span className="text-[10px] text-white font-bold uppercase">1x Field Agent</span>
+                                  </div>
+                               </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                               <div>
+                                  <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest mb-1">Expected Payout</p>
+                                  <p className="text-lg font-mono text-green-500">${selectedMission.cashReward.toLocaleString()}</p>
+                               </div>
+                               <div>
+                                  <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest mb-1">Risk Profile</p>
+                                  <p className={`text-lg font-mono ${selectedMission.riskLevel > 0 ? 'text-hitman-red' : 'text-blue-500'}`}>
+                                     {selectedMission.riskLevel > 0 ? `LEVEL ${selectedMission.riskLevel}` : 'NEGLIGIBLE'}
+                                  </p>
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleStartMission(selectedMission.id)}
+                        className="w-full py-4 bg-hitman-red hover:bg-red-700 text-white font-black uppercase tracking-[0.2em] italic text-sm transition-all shadow-[0_0_15px_rgba(139,0,0,0.3)]"
+                      >
+                         Authorise Operation
+                      </button>
+                   </div>
+                 ) : (
+                   <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30">
+                      <Briefcase size={48} className="mb-4 text-gray-700" />
+                      <p className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500">Select a target to view intelligence briefing</p>
+                   </div>
+                 )}
+              </section>
+            </div>
+
+            <section className="bg-hitman-gray border border-gray-800 p-6 rounded-lg">
+              <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-green-500" />
+                Operational Archive
+              </h3>
+              <div className="space-y-4">
+                {archivedMissions.map(am => {
+                  const template = missionTemplates.find(t => t.id === am.missionId);
+                  return (
+                    <div key={am.id} className="bg-black/20 border border-gray-800 p-4 rounded-lg flex flex-col gap-3 group hover:border-gray-600 transition-colors">
+                      <div className="flex justify-between items-start">
+                         <div>
+                            <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest">Post-Operation Report</p>
+                            <h4 className="text-sm text-white font-bold uppercase tracking-tight">{template?.name || 'Unknown Op'}</h4>
+                         </div>
+                         <div className="flex flex-col items-end">
+                            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${am.status === 'SUCCESS' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
+                               {am.status}
+                            </span>
+                            <p className="text-[8px] text-gray-600 mt-1 font-mono uppercase">{new Date(am.endTime).toLocaleString()}</p>
+                         </div>
+                      </div>
+
+                      <div className="bg-black/40 p-3 rounded border border-gray-800/50">
+                         <p className="text-xs text-gray-400 font-serif italic">"{am.outcomeDetails || 'Debrief information classified.'}"</p>
+                      </div>
+
+                      <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                         <div className="flex items-center gap-2">
+                            <Users size={12} className="text-gray-600" />
+                            <span>Unit Extraction: {(am.status === 'CAPTURED' || am.status === 'DECEASED') ? 'COMPROMISED' : 'COMPLETED'}</span>
+                         </div>
+                         <span className={am.status === 'SUCCESS' ? 'text-green-900' : 'text-gray-800'}>
+                            {am.status === 'SUCCESS' ? 'PAYOUT SECURED' : 'PAYOUT DENIED'}
+                         </span>
+                      </div>
+                    </div>
+                  );
+                })}
+                {archivedMissions.length === 0 && (
+                   <div className="py-20 text-center text-[10px] text-gray-600 uppercase font-bold tracking-widest border border-dashed border-gray-800 rounded">
+                      Archive Empty
+                   </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-6">
+             <section className="bg-hitman-gray border border-gray-800 p-6 rounded-lg">
                 <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
                   <AlertCircle size={16} className="text-blue-500" />
                   Active Operations
@@ -164,14 +248,13 @@ const OperationsPage: React.FC = () => {
                 <div className="space-y-4">
                   {activeMissions.length > 0 ? (
                     activeMissions.map(am => {
-                      const mission = availableMissions.find(m => m.id === am.missionId);
+                      const mission = missionTemplates.find(m => m.id === am.missionId);
                       const assignedStaff = staff.filter(s => am.staffIds.split(',').includes(s.id));
-                      if (!mission) return null;
                       return (
                         <ActiveMissionCard
                           key={am.id}
                           activeMission={am}
-                          mission={mission}
+                          mission={mission || { name: 'Field Op', durationSeconds: 0 } as any}
                           staff={assignedStaff}
                           onComplete={handleMissionComplete}
                         />
@@ -184,37 +267,6 @@ const OperationsPage: React.FC = () => {
                   )}
                 </div>
               </section>
-            </div>
-          </div>
-
-          <aside className="space-y-6">
-            <div className="bg-hitman-gray border border-gray-800 rounded-lg p-6">
-              <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 border-b border-gray-800 pb-2">Operational Alerts</h3>
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <div className="w-1 h-8 bg-hitman-red rounded-full"></div>
-                  <div>
-                     <p className="text-[10px] text-white font-bold uppercase">System Initialisation</p>
-                     <p className="text-[9px] text-gray-500">Agency OS is online. Ready for command.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 opacity-50">
-                  <div className="w-1 h-8 bg-gray-700 rounded-full"></div>
-                  <div>
-                     <p className="text-[10px] text-white font-bold uppercase">Awaiting Intel</p>
-                     <p className="text-[9px] text-gray-500">No high-priority targets detected in this sector.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-hitman-red/10 border border-hitman-red/20 rounded-lg p-6">
-              <h3 className="text-hitman-red font-bold uppercase text-[10px] tracking-widest mb-2">Protocol Zero</h3>
-              <p className="text-[9px] text-gray-400 mb-4">In the event of total agency compromise, initiate shredding procedures immediately.</p>
-              <button className="w-full py-2 bg-hitman-red text-white text-[10px] font-black uppercase tracking-tighter hover:bg-red-700 transition-colours">
-                Authorise Wipe
-              </button>
-            </div>
           </aside>
         </div>
       </div>
